@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orxestra Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white:  #FFFFFF;
+    --beige1: #F7F4EF;
+    --beige2: #EDE8DF;
+    --black:  #1A1A1A;
+    --gray:   #6B6560;
+    --red:    #C0392B;
+    --border: rgba(26,26,26,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--black);
+    min-height: 100vh;
+    color: white;
+  }
+
+  /* AUTH */
+  #auth {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    background: var(--black);
+  }
+  .auth-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 52px 48px;
+    width: 380px;
+    text-align: center;
+  }
+  .auth-logo {
+    font-size: 24px;
+    font-weight: 200;
+    letter-spacing: 0.16em;
+    color: white;
+    margin-bottom: 8px;
+  }
+  .auth-logo span { color: var(--red); }
+  .auth-sub {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-bottom: 40px;
+  }
+  .auth-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    text-align: center;
+    letter-spacing: 4px;
+    outline: none;
+    transition: border-color .2s;
+    margin-bottom: 12px;
+  }
+  .auth-input:focus { border-color: var(--red); }
+  .auth-input::placeholder { color: rgba(255,255,255,0.2); letter-spacing: 1px; font-size: 13px; }
+  .auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--red);
+    color: white;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .auth-btn:hover { background: #a93226; }
+  .auth-error { color: var(--red); font-size: 12px; margin-top: 10px; opacity: 0; transition: opacity .2s; font-weight: 300; }
+  .auth-error.show { opacity: 1; }
+
+  /* APP */
+  #app { display: none; min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 56px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .header-logo {
+    font-size: 18px; font-weight: 200;
+    letter-spacing: 0.16em; color: white;
+  }
+  .header-logo span { color: var(--red); }
+  .header-right {
+    font-size: 11px; font-weight: 300;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 72px 56px 56px;
+    max-width: 700px;
+  }
+  .hero-eyebrow {
+    font-size: 10px; font-weight: 400;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--red); }
+  .hero-title {
+    font-size: 52px; font-weight: 200;
+    line-height: 1.05; letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .hero-title em { font-style: italic; color: rgba(255,255,255,0.4); }
+  .hero-sub {
+    font-size: 15px; font-weight: 300;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.7; max-width: 520px;
+  }
+
+  /* GRID */
+  .tools-section { padding: 0 56px 80px; }
+  .tools-label {
+    font-size: 9px; font-weight: 500;
+    color: rgba(255,255,255,0.18);
+    text-transform: uppercase; letter-spacing: 0.3em;
+    margin-bottom: 24px;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* TOOL CARD */
+  .tool-card {
+    background: rgba(255,255,255,0.02);
+    padding: 40px 40px 36px;
+    text-decoration: none; color: white;
+    transition: background .25s;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    display: block;
+    border-bottom: 2px solid transparent;
+  }
+  .tool-card:hover { background: rgba(255,255,255,0.05); border-color: var(--red); }
+  .tool-card.disabled { cursor: default; opacity: 0.4; pointer-events: none; }
+
+  .card-glyph {
+    font-size: 96px; font-weight: 100;
+    opacity: 0.04; position: absolute;
+    bottom: -12px; right: 16px;
+    line-height: 1; pointer-events: none;
+    transition: opacity .25s; letter-spacing: -0.05em;
+  }
+  .tool-card:hover .card-glyph { opacity: 0.07; }
+
+  .card-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    margin-bottom: 20px; color: rgba(255,255,255,0.3);
+  }
+  .card-status.live { color: #6BCBC2; }
+  .card-status.dev { color: var(--red); }
+  .status-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+  .card-status.dev .status-dot { animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  .card-tag {
+    font-size: 9px; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.2); margin-bottom: 8px;
+  }
+  .card-name {
+    font-size: 28px; font-weight: 200;
+    margin-bottom: 14px; letter-spacing: 0.04em;
+    display: flex; align-items: baseline; gap: 0;
+  }
+  .card-name .x { color: var(--red); }
+  .card-desc {
+    font-size: 13px; font-weight: 300;
+    color: rgba(255,255,255,0.4); line-height: 1.7;
+    max-width: 340px;
+  }
+  .card-arrow {
+    position: absolute; bottom: 24px; right: 28px;
+    font-size: 18px; color: rgba(255,255,255,0.1);
+    transition: all .2s;
+  }
+  .tool-card:hover .card-arrow { color: var(--red); transform: translateX(4px); }
+
+  /* FOOTER */
+  .suite-footer {
+    padding: 20px 56px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-copy { font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.12); }
+  .footer-version { font-size: 10px; color: rgba(255,255,255,0.08); letter-spacing: 0.1em; }
+
+  @media (max-width: 768px) {
+    .tools-grid { grid-template-columns: 1fr; }
+    .header, .hero, .tools-section { padding-left: 24px; padding-right: 24px; }
+    .hero-title { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth">
+  <div class="auth-card">
+    <div class="auth-logo">OR<span>X</span>ESTRA</div>
+    <div class="auth-sub">Suite</div>
+    <input type="password" class="auth-input" id="pw" placeholder="Passwort" onkeydown="if(event.key==='Enter')login()">
+    <button class="auth-btn" onclick="login()">Zugang</button>
+    <div class="auth-error" id="err">Falsches Passwort</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="header">
+    <div class="header-logo">OR<span>X</span>ESTRA</div>
+    <div class="header-right">AI Suite for Executive Search</div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Orxestra Suite</div>
+    <div class="hero-title">You conduct.<br><em>AI does the work.</em></div>
+    <div class="hero-sub">In a market where everyone looks the same — Orxestra is your edge. Vier Module die den kompletten Executive-Search-Workflow automatisieren.</div>
+  </div>
+
+  <div class="tools-section">
+    <div class="tools-label">Module</div>
+    <div class="tools-grid">
+
+      <!-- x-CHECK -->
+      <a href="/xcheck.html" class="tool-card">
+        <div class="card-status live"><span class="status-dot"></span>Live</div>
+        <div class="card-tag">01 · Pipeline & Outreach</div>
+        <div class="card-name"><span class="x">x</span>-CHECK</div>
+        <div class="card-desc">Täglicher AI-Marktscan auf Trigger-Events — CEO-Wechsel, Restrukturierungen, PE-Einstiege. Situationsspezifische Pitch-Briefe in 60 Sekunden.</div>
+        <div class="card-arrow">→</div>
+        <div class="card-glyph">x</div>
+      </a>
+
+      <!-- x-SCOUT -->
+      <a href="/scout.html" class="tool-card">
+        <div class="card-status live"><span class="status-dot"></span>Live</div>
+        <div class="card-tag">02 · Candidate Screening</div>
+        <div class="card-name"><span class="x">x</span>-SCOUT</div>
+        <div class="card-desc">Kandidaten-PDF hochladen — automatisches Scoring gegen Anforderungsprofil mit Stärken, Lücken und Outreach-Mail in 20 Sekunden.</div>
+        <div class="card-arrow">→</div>
+        <div class="card-glyph">x</div>
+      </a>
+
+      <!-- x-PULSE -->
+      <a href="/pulse.html" class="tool-card">
+        <div class="card-status live"><span class="status-dot"></span>Live</div>
+        <div class="card-tag">03 · Content Intelligence</div>
+        <div class="card-name"><span class="x">x</span>-PULSE</div>
+        <div class="card-desc">Wöchentlicher Scan von Thought-Leadership-Quellen. Differenzierte LinkedIn-Posts in Ihrer persönlichen Stimme — kein Ghostwriter.</div>
+        <div class="card-arrow">→</div>
+        <div class="card-glyph">x</div>
+      </a>
+
+      <!-- x-DOCS -->
+      <a href="/docs.html" class="tool-card">
+        <div class="card-status live"><span class="status-dot"></span>Live</div>
+        <div class="card-tag">04 · Document Generation</div>
+        <div class="card-name"><span class="x">x</span>-DOCS</div>
+        <div class="card-desc">Kandidatenreporte, Angebote und anonyme Stellenbeschreibungen — im CI Ihrer Beratung, in Deutsch und Englisch, in 30 Sekunden.</div>
+        <div class="card-arrow">→</div>
+        <div class="card-glyph">x</div>
+      </a>
+
+    </div>
+  </div>
+
+  <footer class="suite-footer">
+    <div class="footer-copy">© 2026 Orxestra — Stein &amp; Partner GmbH</div>
+    <div class="footer-version">Suite v1.0</div>
+  </footer>
+</div>
+
+<script>
+function login() {
+  const pw = document.getElementById('pw').value;
+  const err = document.getElementById('err');
+  if (pw === 'Orxestra2026') {
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } else {
+    err.classList.add('show');
+    setTimeout(() => err.classList.remove('show'), 2000);
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+</script>
+</body>
+</html>

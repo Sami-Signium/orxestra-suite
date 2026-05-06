@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>x-PULSE — PR & Communication Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #081D4D;
+    --navy-mid: #0d2a6b;
+    --navy-light: #1a3a7a;
+    --orange: #FF6A42;
+    --orange-light: #ff8a68;
+    --teal: #6BCBC2;
+    --teal-light: #8ddbd3;
+    --blue: #24629B;
+    --white: #ffffff;
+    --off-white: #F7F8FA;
+    --gray-light: #EEF0F4;
+    --gray-mid: #C8CDD8;
+    --gray-text: #4A4F5C;
+    --gray-sub: #7A8090;
+    --success: #2ECC71;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --radius: 8px;
+    --shadow: 0 2px 16px rgba(8,29,77,0.10);
+    --shadow-lg: 0 8px 40px rgba(8,29,77,0.16);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--off-white);
+    color: var(--gray-text);
+    min-height: 100vh;
+  }
+
+  /* ── AUTH ── */
+  #auth-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: var(--navy);
+    background-image: radial-gradient(ellipse at 20% 50%, rgba(36,98,155,0.3) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 20%, rgba(107,203,194,0.15) 0%, transparent 50%);
+  }
+  .auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 380px;
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+  }
+  .auth-logo {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .auth-logo span { color: var(--orange); }
+  .auth-sub {
+    font-size: 13px;
+    color: var(--gray-sub);
+    margin: 6px 0 32px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+  }
+  .auth-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--gray-mid);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--navy);
+    outline: none;
+    transition: border-color .2s;
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 3px;
+  }
+  .auth-input:focus { border-color: var(--orange); }
+  .auth-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .auth-btn:hover { background: var(--navy-light); }
+  .auth-error { color: var(--orange); font-size: 13px; margin-top: 8px; }
+
+  /* ── MAIN APP ── */
+  #app { display: none; flex-direction: column; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .header-left { display: flex; align-items: center; gap: 20px; }
+  .header-logo {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+  .header-logo span { color: var(--orange); }
+  .header-tagline {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    padding-left: 20px;
+    border-left: 1px solid rgba(255,255,255,0.15);
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-nav-btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font-body);
+    transition: all .2s;
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.15); color: white; }
+  .btn-ghost.active {
+    background: rgba(255,106,66,0.2);
+    color: var(--orange);
+  }
+  .lang-toggle {
+    display: flex;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .lang-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    font-family: var(--font-body);
+    transition: all .2s;
+    letter-spacing: 0.5px;
+  }
+  .lang-btn.active { background: var(--orange); color: white; }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; padding: 32px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+  /* ── VOICE SETUP BANNER ── */
+  .voice-banner {
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .voice-banner-text h3 {
+    font-family: var(--font-display);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .voice-banner-text p { color: rgba(255,255,255,0.6); font-size: 13px; }
+  .voice-banner-btn {
+    padding: 9px 20px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--font-body);
+    transition: background .2s;
+  }
+  .voice-banner-btn:hover { background: var(--orange-light); }
+
+  /* ── FORMAT CARDS ── */
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .section-sub { font-size: 14px; color: var(--gray-sub); margin-bottom: 24px; }
+
+  .format-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .format-card {
+    background: white;
+    border: 2px solid var(--gray-light);
+    border-radius: 12px;
+    padding: 22px 20px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .format-card:hover {
+    border-color: var(--navy);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .format-card.active {
+    border-color: var(--orange);
+    background: #fff8f6;
+  }
+  .format-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gray-light);
+    transition: background .2s;
+  }
+  .format-card.active::before { background: var(--orange); }
+  .format-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .icon-linkedin { background: #E8F0FD; }
+  .icon-whitepaper { background: #EDF7F6; }
+  .icon-newsletter { background: #FFF0ED; }
+  .icon-press { background: #EEF0F8; }
+  .format-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .format-desc { font-size: 12px; color: var(--gray-sub); line-height: 1.5; }
+
+  /* ── GENERATOR PANEL ── */
+  .generator-panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 32px;
+    display: none;
+  }
+  .generator-panel.visible { display: block; }
+  .panel-header {
+    background: var(--navy);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .panel-header-icon {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .panel-header h2 {
+    font-family: var(--font-display);
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .panel-header span { color: rgba(255,255,255,0.5); font-size: 13px; margin-left: auto; }
+  .panel-body { padding: 28px 24px; }
+
+  /* ── FORM ELEMENTS ── */
+  .form-row { display: grid; gap: 16px; margin-bottom: 20px; }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 7px;
+  }
+  input[type=text], input[type=email], textarea, select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--gray-light);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--navy);
+    background: var(--off-white);
+    outline: none;
+    transition: border-color .2s;
+    resize: vertical;
+  }
+  input[type=text]:focus, textarea:focus, select:focus {
+    border-color: var(--orange);
+    background: white;
+  }
+  select { cursor: pointer; }
+
+  /* Audience chips */
+  .audience-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .audience-chip {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--gray-mid);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+    background: white;
+    color: var(--gray-text);
+    user-select: none;
+  }
+  .audience-chip:hover { border-color: var(--navy); color: var(--navy); }
+  .audience-chip.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+  /* Tone selector */
+  .tone-selector { display: flex; gap: 8px; }
+  .tone-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--gray-mid);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s;
+    background: white;
+    color: var(--gray-text);
+  }
+  .tone-chip:hover { border-color: var(--navy); color: var(--navy); }
+  .tone-chip.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+  /* ── GENERATE BTN ── */
+  .generate-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 28px;
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+  }
+  .generate-btn:hover { background: var(--orange-light); transform: translateY(-1px); }
+  .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .generate-btn .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    display: none;
+  }
+  .generate-btn.loading .spinner { display: block; }
+  .generate-btn.loading .btn-label { opacity: 0.7; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── OUTPUT AREA ── */
+  .output-area {
+    margin-top: 28px;
+    border-top: 1.5px solid var(--gray-light);
+    padding-top: 24px;
+    display: none;
+  }
+  .output-area.visible { display: block; }
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .output-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .output-actions { display: flex; gap: 8px; }
+  .action-btn {
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--gray-mid);
+    background: white;
+    color: var(--gray-text);
+    font-family: var(--font-body);
+    transition: all .2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .action-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .action-btn.primary { background: var(--navy); color: white; border-color: var(--navy); }
+  .action-btn.primary:hover { background: var(--navy-light); }
+  .action-btn.teal { background: var(--teal); color: var(--navy); border-color: var(--teal); }
+  .action-btn.teal:hover { background: var(--teal-light); }
+
+  /* LinkedIn campaign posts */
+  .campaign-posts { display: flex; flex-direction: column; gap: 20px; }
+  .post-card {
+    background: white;
+    border: 1.5px solid var(--gray-light);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(8,29,77,0.07);
+    transition: box-shadow .2s;
+  }
+  .post-card:hover { box-shadow: 0 4px 20px rgba(8,29,77,0.12); }
+  .post-card-header {
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .post-week-info { display: flex; align-items: center; gap: 10px; }
+  .post-week-num {
+    width: 32px; height: 32px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+  }
+  .post-week-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .post-week-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 1px;
+  }
+  .post-tone-badge {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge-sachlich { background: rgba(107,203,194,0.25); color: var(--teal-light); }
+  .badge-persönlich { background: rgba(255,106,66,0.25); color: #ffaa8a; }
+  .badge-provokant { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
+
+  /* LinkedIn mock preview */
+  .post-linkedin-preview {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  .post-preview-author {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .post-avatar {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    font-family: var(--font-display);
+    flex-shrink: 0;
+  }
+  .post-author-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .post-author-title {
+    font-size: 11px;
+    color: var(--gray-sub);
+    margin-top: 1px;
+  }
+  .post-content {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--gray-text);
+    white-space: pre-wrap;
+  }
+  .post-hashtags {
+    margin-top: 10px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .post-hashtag {
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+    cursor: default;
+  }
+  .post-footer {
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--off-white);
+  }
+  .post-char-count {
+    font-size: 11px;
+    color: var(--gray-sub);
+  }
+  .post-copy-btn {
+    padding: 6px 14px;
+    background: white;
+    border: 1.5px solid var(--gray-mid);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-body);
+    color: var(--gray-text);
+    transition: all .2s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .post-copy-btn:hover { border-color: var(--teal); color: var(--navy); background: white; }
+
+  /* Generic text output */
+  .text-output {
+    background: var(--off-white);
+    border: 1.5px solid var(--gray-light);
+    border-radius: 10px;
+    padding: 24px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--gray-text);
+    white-space: pre-wrap;
+    min-height: 200px;
+  }
+
+  /* ── ARCHIVE TAB ── */
+  #archive-view { display: none; }
+  .archive-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .archive-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--gray-mid);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    background: white;
+    color: var(--gray-sub);
+    font-family: var(--font-body);
+    transition: all .2s;
+  }
+  .filter-chip:hover, .filter-chip.active {
+    background: var(--navy); color: white; border-color: var(--navy);
+  }
+  .archive-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .archive-table table { width: 100%; border-collapse: collapse; }
+  .archive-table th {
+    background: var(--navy);
+    color: rgba(255,255,255,0.8);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 16px;
+    text-align: left;
+  }
+  .archive-table td {
+    padding: 13px 16px;
+    font-size: 13px;
+    color: var(--gray-text);
+    border-bottom: 1px solid var(--gray-light);
+  }
+  .archive-table tr:last-child td { border-bottom: none; }
+  .archive-table tr:hover td { background: var(--off-white); }
+  .format-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-linkedin { background: #E8F0FD; color: #1a56c4; }
+  .badge-whitepaper { background: #EDF7F6; color: #1a7a72; }
+  .badge-newsletter { background: #FFF0ED; color: #b83d1e; }
+  .badge-press { background: #EEF0F8; color: var(--navy); }
+  .lang-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .lang-de { background: var(--gray-light); color: var(--navy); }
+  .lang-en { background: rgba(107,203,194,0.2); color: #1a7a72; }
+  .archive-view-btn {
+    padding: 5px 12px;
+    background: white;
+    border: 1.5px solid var(--gray-mid);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    color: var(--gray-sub);
+    transition: all .2s;
+  }
+  .archive-view-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-sub);
+  }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── VOICE MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(8,29,77,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 36px 32px;
+    width: 560px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+  }
+  .modal h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .modal p { font-size: 13px; color: var(--gray-sub); margin-bottom: 24px; line-height: 1.6; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+  .modal-cancel {
+    padding: 10px 20px;
+    background: var(--gray-light);
+    color: var(--gray-text);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .modal-save {
+    padding: 10px 24px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .modal-save:hover { background: var(--navy-light); }
+
+  /* Archive detail modal */
+  .archive-content-view {
+    white-space: pre-wrap;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--gray-text);
+    background: var(--off-white);
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 16px;
+  }
+
+  /* Notification */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--navy);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all .3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { background: var(--success); }
+  .toast.error { background: #e74c3c; }
+
+  /* ── UPLOAD ZONES ── */
+  .upload-zone {
+    border: 2px dashed var(--gray-mid);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--off-white);
+    position: relative;
+  }
+  .upload-zone:hover { border-color: var(--orange); background: #fff8f6; }
+  .upload-zone.has-file { border-color: var(--teal); border-style: solid; background: #f0faf9; }
+  .upload-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-zone-icon { font-size: 24px; margin-bottom: 6px; }
+  .upload-zone-text { font-size: 13px; color: var(--gray-sub); }
+  .upload-zone-text strong { color: var(--navy); }
+  .upload-file-name {
+    font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 4px;
+  }
+  .upload-section-title {
+    font-size: 13px; font-weight: 600; color: var(--navy);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 12px; margin-top: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .upload-section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--gray-light);
+  }
+
+  /* Photo upload grid */
+  .photo-upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .photo-preview {
+    width: 100%; height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 6px;
+    display: none;
+  }
+  .photo-preview.visible { display: block; }
+
+  /* Download button */
+  .action-btn.download {
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    color: white; border-color: var(--navy);
+  }
+  .action-btn.download:hover { background: var(--navy-light); }
+
+  @media (max-width: 768px) {
+    .format-grid { grid-template-columns: 1fr 1fr; }
+    .form-row.cols-2, .form-row.cols-3 { grid-template-columns: 1fr; }
+    .content { padding: 20px 16px; }
+    .header { padding: 0 16px; }
+    .header-tagline { display: none; }
+    .photo-upload-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">PUL<span>SE</span></div>
+    <div class="auth-sub">PR & Communication · Orxestra Suite</div>
+    <input type="password" class="auth-input" id="auth-pw" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')doAuth()">
+    <button class="auth-btn" onclick="doAuth()">Zugang</button>
+    <div class="auth-error" id="auth-err"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="header-logo">PUL<span>SE</span></div>
+      <div class="header-tagline">PR & Communication Assistant</div>
+    </div>
+    <div class="header-right">
+      <button class="header-nav-btn btn-ghost active" id="nav-generator" onclick="showView('generator')">Generator</button>
+      <button class="header-nav-btn btn-ghost" id="nav-archive" onclick="showView('archive')">Archiv</button>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="lang-de" onclick="setLang('de')">DE</button>
+        <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="header-nav-btn btn-ghost" onclick="openVoiceModal()" title="Kommunikationsstil">🎙 Voice</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- GENERATOR VIEW -->
+    <div id="generator-view">
+      <!-- Voice Banner (shown if no profile) -->
+      <div class="voice-banner" id="voice-banner">
+        <div class="voice-banner-text">
+          <h3>Richten Sie Ihren Kommunikationsstil ein</h3>
+          <p>Einmaliges Setup — danach klingt jeder generierte Inhalt nach Ihnen, nicht nach einer KI.</p>
+        </div>
+        <button class="voice-banner-btn" onclick="openVoiceModal()">Jetzt einrichten →</button>
+      </div>
+
+      <div class="section-title">Was möchten Sie erstellen?</div>
+      <div class="section-sub">Wählen Sie ein Format und geben Sie Ihr Thema ein.</div>
+
+      <!-- FORMAT CARDS -->
+      <div class="format-grid">
+        <div class="format-card active" id="card-linkedin" onclick="selectFormat('linkedin')">
+          <div class="format-icon icon-linkedin">💼</div>
+          <div class="format-name">LinkedIn-Kampagne</div>
+          <div class="format-desc">4-Post-Sequenz über 4 Wochen mit rotem Faden, 3 Tonalitäts-Varianten</div>
+        </div>
+        <div class="format-card" id="card-whitepaper" onclick="selectFormat('whitepaper')">
+          <div class="format-icon icon-whitepaper">📄</div>
+          <div class="format-name">Whitepaper</div>
+          <div class="format-desc">Thought-Leadership-Artikel, 1.500–3.000 Wörter, DOCX-Download</div>
+        </div>
+        <div class="format-card" id="card-newsletter" onclick="selectFormat('newsletter')">
+          <div class="format-icon icon-newsletter">📬</div>
+          <div class="format-name">Newsletter</div>
+          <div class="format-desc">Quartalskommunikation, HTML-formatiert, versandfertig</div>
+        </div>
+        <div class="format-card" id="card-press" onclick="selectFormat('press')">
+          <div class="format-icon icon-press">📢</div>
+          <div class="format-name">Presseaussendung</div>
+          <div class="format-desc">OTS/APA-Konvention, Boilerplate inklusive, sofort versendbar</div>
+        </div>
+      </div>
+
+      <!-- GENERATOR PANEL — LINKEDIN -->
+      <div class="generator-panel visible" id="panel-linkedin">
+        <div class="panel-header">
+          <div class="panel-header-icon">💼</div>
+          <h2>LinkedIn-Kampagne</h2>
+          <span>4 Posts · 4 Wochen · 3 Varianten</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-row">
+            <div>
+              <label>Thema / Kernbotschaft</label>
+              <input type="text" id="li-topic" placeholder="z.B. Warum scheitern externe CEO-Einstellungen in CEE-Märkten?">
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div>
+              <label>Zielgruppe <span style="font-weight:400;color:var(--gray-sub);text-transform:none;letter-spacing:0">(Mehrfachauswahl)</span></label>
+              <div class="audience-chips" id="li-audience">
+                <div class="audience-chip" onclick="toggleAudience(this)">CHROs & HR-Entscheider</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">CEOs & Vorstände</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">Board Members & Aufsichtsräte</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">Private Equity & Investoren</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">Allgemein (DACH/CEE)</div>
+              </div>
+            </div>
+            <div>
+              <label>Kampagnen-Ton</label>
+              <div class="tone-selector">
+                <div class="tone-chip active" onclick="selectTone(this,'li')">Sachlich</div>
+                <div class="tone-chip" onclick="selectTone(this,'li')">Persönlich</div>
+                <div class="tone-chip" onclick="selectTone(this,'li')">Provokant</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Zusätzlicher Kontext (optional)</label>
+              <textarea id="li-context" rows="3" placeholder="Eigene Erfahrungen, aktuelle Studien, spezifische Märkte..."></textarea>
+            </div>
+          </div>
+          <button class="generate-btn" id="btn-li" onclick="generate('linkedin')">
+            <div class="spinner"></div>
+            <span class="btn-label">Kampagne generieren</span>
+          </button>
+
+          <div class="output-area" id="out-linkedin">
+            <div class="output-header">
+              <div class="output-title">Ihre LinkedIn-Kampagne</div>
+              <div class="output-actions">
+                <button class="action-btn teal" onclick="saveToArchive('linkedin')">💾 Archivieren</button>
+                <button class="action-btn primary" onclick="copyAll('linkedin')">📋 Alle kopieren</button>
+              </div>
+            </div>
+            <div class="campaign-posts" id="posts-container"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERATOR PANEL — WHITEPAPER -->
+      <div class="generator-panel" id="panel-whitepaper">
+        <div class="panel-header">
+          <div class="panel-header-icon">📄</div>
+          <h2>Whitepaper</h2>
+          <span>Outline → Review → Volltext</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-row">
+            <div>
+              <label>Titel / Thema</label>
+              <input type="text" id="wp-topic" placeholder="z.B. Leadership Transition in CEE: Warum 40% der Führungswechsel scheitern">
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div>
+              <label>Zielgruppe <span style="font-weight:400;color:var(--gray-sub);text-transform:none;letter-spacing:0">(Mehrfachauswahl)</span></label>
+              <div class="audience-chips" id="wp-audience">
+                <div class="audience-chip" onclick="toggleAudience(this)">CHROs & HR-Entscheider</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">CEOs & Vorstände</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">Board Members</div>
+                <div class="audience-chip" onclick="toggleAudience(this)">Private Equity</div>
+              </div>
+            </div>
+            <div>
+              <label>Länge</label>
+              <select id="wp-length">
+                <option value="short">Kompakt (1.000–1.500 Wörter)</option>
+                <option value="medium" selected>Standard (1.500–2.500 Wörter)</option>
+                <option value="long">Ausführlich (2.500–3.500 Wörter)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Kernthesen / Eigene Perspektive</label>
+              <textarea id="wp-thesis" rows="4" placeholder="Was ist Ihre zentrale Aussage? Welche Erfahrungen / Daten möchten Sie einbringen?"></textarea>
+            </div>
+          </div>
+
+          <div class="upload-section-title">📎 Quellen & Fotos (optional)</div>
+          <div class="form-row cols-2">
+            <div>
+              <label>Quelldokument hochladen (PDF/DOCX)</label>
+              <div class="upload-zone" id="wp-doc-zone">
+                <input type="file" accept=".pdf,.docx" onchange="handleDocUpload(this,'wp')">
+                <div class="upload-zone-icon">📄</div>
+                <div class="upload-zone-text"><strong>Klicken</strong> oder Datei hierher ziehen<br>Studie, Artikel, Global Newsletter</div>
+                <div class="upload-file-name" id="wp-doc-name"></div>
+              </div>
+            </div>
+            <div>
+              <label>Titelbild hochladen</label>
+              <div class="upload-zone" id="wp-photo-zone">
+                <input type="file" accept="image/*" onchange="handlePhotoUpload(this,'wp','1')">
+                <div class="upload-zone-icon">🖼</div>
+                <div class="upload-zone-text"><strong>Klicken</strong> oder Bild hierher ziehen</div>
+                <div class="upload-file-name" id="wp-photo-name-1"></div>
+              </div>
+              <img id="wp-photo-preview-1" class="photo-preview">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="generate-btn" id="btn-wp-outline" onclick="generate('whitepaper-outline')" style="background:var(--navy);">
+              <div class="spinner"></div>
+              <span class="btn-label">1. Outline erstellen</span>
+            </button>
+            <button class="generate-btn" id="btn-wp-full" onclick="generate('whitepaper-full')" style="display:none;">
+              <div class="spinner"></div>
+              <span class="btn-label">2. Volltext generieren</span>
+            </button>
+          </div>
+
+          <div class="output-area" id="out-whitepaper">
+            <div class="output-header">
+              <div class="output-title" id="wp-output-title">Outline</div>
+              <div class="output-actions">
+                <button class="action-btn teal" onclick="saveToArchive('whitepaper')">💾 Archivieren</button>
+                <button class="action-btn primary" onclick="copyAll('whitepaper')">📋 Kopieren</button>
+                <button class="action-btn download" onclick="downloadDocx('whitepaper')">⬇ DOCX</button>
+              </div>
+            </div>
+            <div class="text-output" id="wp-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERATOR PANEL — NEWSLETTER -->
+      <div class="generator-panel" id="panel-newsletter">
+        <div class="panel-header">
+          <div class="panel-header-icon">📬</div>
+          <h2>Quartalsnewsletter</h2>
+          <span>HTML · Versandfertig</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-row cols-2">
+            <div>
+              <label>Quartal</label>
+              <select id="nl-quarter">
+                <option>Q1 2026</option>
+                <option>Q2 2026</option>
+                <option>Q3 2026</option>
+                <option>Q4 2026</option>
+              </select>
+            </div>
+            <div>
+              <label>Schwerpunkt-Thema</label>
+              <input type="text" id="nl-focus" placeholder="z.B. Leadership Transition, Board Governance">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Kernthemen des Quartals (2–4, Komma getrennt)</label>
+              <input type="text" id="nl-topics" placeholder="z.B. CEO-Nachfolge DACH, ESG in Aufsichtsräten, CEE Talentmarkt 2026">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Persönliche Nachricht / Editorial-Notiz</label>
+              <textarea id="nl-editorial" rows="3" placeholder="Was möchten Sie persönlich einleiten? Highlight des Quartals?"></textarea>
+            </div>
+          </div>
+
+          <div class="upload-section-title">📎 Quellen & Fotos (optional)</div>
+          <div class="form-row cols-2">
+            <div>
+              <label>Quelldokument hochladen (PDF/DOCX)</label>
+              <div class="upload-zone" id="nl-doc-zone">
+                <input type="file" accept=".pdf,.docx" onchange="handleDocUpload(this,'nl')">
+                <div class="upload-zone-icon">📄</div>
+                <div class="upload-zone-text"><strong>Klicken</strong> oder Datei hierher ziehen<br>Global Newsletter, Studien, Artikel</div>
+                <div class="upload-file-name" id="nl-doc-name"></div>
+              </div>
+            </div>
+            <div>
+              <label>Fotos — URL eingeben (bis zu 2)</label>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <input type="text" id="nl-photo-url-1" placeholder="https://... (Titelbild, vollbreite Hero)" oninput="previewPhotoUrl(this,'nl-preview-1')">
+                <img id="nl-preview-1" style="display:none;width:100%;height:80px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-light)">
+                <input type="text" id="nl-photo-url-2" placeholder="https://... (Artikel-Foto)" oninput="previewPhotoUrl(this,'nl-preview-2')">
+                <img id="nl-preview-2" style="display:none;width:100%;height:80px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-light)">
+              </div>
+            </div>
+          </div>
+          <button class="generate-btn" id="btn-nl" onclick="generate('newsletter')">
+            <div class="spinner"></div>
+            <span class="btn-label">Newsletter generieren</span>
+          </button>
+
+          <div class="output-area" id="out-newsletter">
+            <div class="output-header">
+              <div class="output-title">Ihr Newsletter</div>
+              <div class="output-actions">
+                <button class="action-btn teal" onclick="saveToArchive('newsletter')">💾 Archivieren</button>
+                <button class="action-btn primary" onclick="copyAll('newsletter')">📋 Kopieren</button>
+                <button class="action-btn download" onclick="downloadDocx('newsletter')">⬇ DOCX</button>
+              </div>
+            </div>
+            <div class="text-output" id="nl-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERATOR PANEL — PRESS -->
+      <div class="generator-panel" id="panel-press">
+        <div class="panel-header">
+          <div class="panel-header-icon">📢</div>
+          <h2>Presseaussendung</h2>
+          <span>OTS/APA Format · Boilerplate inkl.</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-row cols-2">
+            <div>
+              <label>Anlass</label>
+              <select id="pr-anlass">
+                <option>Gewonnenes Mandat</option>
+                <option>Erfolgreiche Platzierung</option>
+                <option>Neue Partnerschaft</option>
+                <option>Event / Publikation</option>
+                <option>Expansion / Markteintritt</option>
+                <option>Award / Auszeichnung</option>
+              </select>
+            </div>
+            <div>
+              <label>Datum der Aussendung</label>
+              <input type="text" id="pr-date" placeholder="z.B. Wien, 2. April 2026">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Kerninhalt / Was ist passiert?</label>
+              <textarea id="pr-content" rows="4" placeholder="Beschreiben Sie den Sachverhalt: Unternehmen, Position, Branche, Besonderheiten..."></textarea>
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div>
+              <label>Zitat-Person (für direktes Zitat)</label>
+              <input type="text" id="pr-quote-person" placeholder="z.B. Sami Hamid, Managing Partner">
+            </div>
+            <div>
+              <label>Zitat-Kernaussage</label>
+              <input type="text" id="pr-quote-msg" placeholder="z.B. Diese Besetzung unterstreicht...">
+            </div>
+          </div>
+          <button class="generate-btn" id="btn-pr" onclick="generate('press')">
+            <div class="spinner"></div>
+            <span class="btn-label">Pressemitteilung generieren</span>
+          </button>
+
+          <div class="output-area" id="out-press">
+            <div class="output-header">
+              <div class="output-title">Ihre Presseaussendung</div>
+              <div class="output-actions">
+                <button class="action-btn teal" onclick="saveToArchive('press')">💾 Archivieren</button>
+                <button class="action-btn primary" onclick="copyAll('press')">📋 Kopieren</button>
+                <button class="action-btn download" onclick="downloadDocx('press')">⬇ DOCX</button>
+              </div>
+            </div>
+            <div class="text-output" id="pr-text"></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /generator-view -->
+
+    <!-- ARCHIVE VIEW -->
+    <div id="archive-view">
+      <div class="archive-header">
+        <div>
+          <div class="section-title">Archiv</div>
+          <div class="section-sub">Alle generierten Inhalte</div>
+        </div>
+        <button class="action-btn" onclick="exportCSV()">⬇ CSV Export</button>
+      </div>
+      <div class="archive-filters" id="archive-filters">
+        <div class="filter-chip active" onclick="filterArchive('all',this)">Alle</div>
+        <div class="filter-chip" onclick="filterArchive('linkedin',this)">LinkedIn</div>
+        <div class="filter-chip" onclick="filterArchive('whitepaper',this)">Whitepaper</div>
+        <div class="filter-chip" onclick="filterArchive('newsletter',this)">Newsletter</div>
+        <div class="filter-chip" onclick="filterArchive('press',this)">Presseaussendung</div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="archive-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Format</th>
+                <th>Thema</th>
+                <th>Sprache</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="archive-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /archive-view -->
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<!-- VOICE MODAL -->
+<div class="modal-overlay" id="voice-modal">
+  <div class="modal">
+    <h2>🎙 Ihr Kommunikationsstil</h2>
+    <p>Diese Einstellungen werden in alle generierten Inhalte eingebettet — so klingt PULSE nach Ihnen, nicht nach einer KI. Einmal einrichten, dauerhaft gespeichert.</p>
+    <div class="form-row">
+      <div>
+        <label>Ihre Rolle & Position</label>
+        <input type="text" id="v-role" placeholder="z.B. Managing Partner, Orxestra — Executive Search DACH/CEE">
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Tonalität (wie schreiben Sie?)</label>
+        <textarea id="v-tone" rows="3" placeholder="z.B. Direkt, substanziell, keine leeren Buzzwords. Ich schreibe aus der Praxis, nicht aus dem Lehrbuch. Klar, aber nie arrogant."></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Thematische Schwerpunkte</label>
+        <textarea id="v-topics" rows="2" placeholder="z.B. Executive Search, CEO-Nachfolge, Board Governance, Leadership in CEE-Märkten, Organisationskultur"></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Was soll PULSE NICHT schreiben?</label>
+        <textarea id="v-avoid" rows="2" placeholder="z.B. Keine generischen Karrieretipps. Keine Motivationsposter-Phrasen. Nicht zu akademisch."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeVoiceModal()">Abbrechen</button>
+      <button class="modal-save" onclick="saveVoiceProfile()">Stil speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ARCHIVE DETAIL MODAL -->
+<div class="modal-overlay" id="archive-modal">
+  <div class="modal" style="max-width:680px;">
+    <h2 id="archive-modal-title">Inhalt</h2>
+    <div class="archive-content-view" id="archive-modal-content"></div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="document.getElementById('archive-modal').classList.remove('open')">Schließen</button>
+      <button class="modal-save" onclick="copyArchiveContent()">📋 Kopieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SUPABASE ──
+const SB_URL = 'https://ftdxhswcnghlmcagrsox.supabase.co';
+const SB_KEY = 'sb_publishable_c8YygosML2xrImmWCpI1rw_6j_pvCRA';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// ── STATE ──
+let currentLang = 'de';
+let currentFormat = 'linkedin';
+let currentTone = { li: 'Sachlich' };
+let voiceProfile = null;
+let archiveData = [];
+let lastOutputs = {};
+let wpOutlineText = '';
+
+// ── AUTH ──
+function doAuth() {
+  const pw = document.getElementById('auth-pw').value;
+  if (pw === 'Orxestra2026') {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+  } else {
+    document.getElementById('auth-err').textContent = 'Falsches Passwort';
+  }
+}
+
+// ── INIT ──
+async function init() {
+  loadVoiceProfile();
+  loadArchive();
+}
+
+// ── VOICE PROFILE ──
+function loadVoiceProfile() {
+  const stored = localStorage.getItem('pulse_voice');
+  if (stored) {
+    voiceProfile = JSON.parse(stored);
+    document.getElementById('voice-banner').style.display = 'none';
+    // Prefill modal
+    document.getElementById('v-role').value = voiceProfile.role || '';
+    document.getElementById('v-tone').value = voiceProfile.tone || '';
+    document.getElementById('v-topics').value = voiceProfile.topics || '';
+    document.getElementById('v-avoid').value = voiceProfile.avoid || '';
+  }
+}
+
+function openVoiceModal() {
+  document.getElementById('voice-modal').classList.add('open');
+}
+function closeVoiceModal() {
+  document.getElementById('voice-modal').classList.remove('open');
+}
+function saveVoiceProfile() {
+  voiceProfile = {
+    role: document.getElementById('v-role').value,
+    tone: document.getElementById('v-tone').value,
+    topics: document.getElementById('v-topics').value,
+    avoid: document.getElementById('v-avoid').value,
+  };
+  localStorage.setItem('pulse_voice', JSON.stringify(voiceProfile));
+  document.getElementById('voice-banner').style.display = 'none';
+  closeVoiceModal();
+  showToast('Kommunikationsstil gespeichert ✓', 'success');
+}
+
+function buildVoiceContext() {
+  if (!voiceProfile) return '';
+  return `
+KOMMUNIKATIONSSTIL DES AUTORS:
+- Rolle: ${voiceProfile.role}
+- Tonalität: ${voiceProfile.tone}
+- Thematische Schwerpunkte: ${voiceProfile.topics}
+- Bitte NICHT: ${voiceProfile.avoid}
+
+Der gesamte Inhalt muss in dieser Stimme verfasst sein. Kein generisches KI-Klingt-Alles-Gleich-Schreiben.`;
+}
+
+function previewPhotoUrl(input, previewId) {
+  const img = document.getElementById(previewId);
+  if (input.value.startsWith('http')) {
+    img.src = input.value;
+    img.style.display = 'block';
+    img.onerror = () => { img.style.display = 'none'; };
+  } else {
+    img.style.display = 'none';
+  }
+}
+
+function toggleAudience(el) {
+  el.classList.toggle('active');
+}
+
+function getAudience(id) {
+  const chips = document.querySelectorAll('#' + id + ' .audience-chip.active');
+  if (chips.length === 0) return 'DACH/CEE Business Entscheider';
+  return Array.from(chips).map(c => c.textContent).join(', ');
+}
+
+// ── LANG ──
+function setLang(l) {
+  currentLang = l;
+  document.getElementById('lang-de').classList.toggle('active', l==='de');
+  document.getElementById('lang-en').classList.toggle('active', l==='en');
+  showToast(l === 'de' ? 'Sprache: Deutsch' : 'Language: English');
+}
+
+// ── FORMAT SELECT ──
+function selectFormat(f) {
+  currentFormat = f;
+  ['linkedin','whitepaper','newsletter','press'].forEach(fmt => {
+    document.getElementById('card-'+fmt).classList.toggle('active', fmt===f);
+    document.getElementById('panel-'+fmt).classList.toggle('visible', fmt===f);
+  });
+}
+
+// ── TONE ──
+function selectTone(el, prefix) {
+  el.closest('.tone-selector').querySelectorAll('.tone-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentTone[prefix] = el.textContent;
+}
+
+// ── VIEW ──
+function showView(v) {
+  document.getElementById('generator-view').style.display = v==='generator' ? 'block' : 'none';
+  document.getElementById('archive-view').style.display = v==='archive' ? 'block' : 'none';
+  document.getElementById('nav-generator').classList.toggle('active', v==='generator');
+  document.getElementById('nav-archive').classList.toggle('active', v==='archive');
+  if (v==='archive') renderArchive();
+}
+
+// ── GENERATE ──
+async function generate(type) {
+  const btnMap = {
+    'linkedin': 'btn-li',
+    'whitepaper-outline': 'btn-wp-outline',
+    'whitepaper-full': 'btn-wp-full',
+    'newsletter': 'btn-nl',
+    'press': 'btn-pr'
+  };
+  const btn = document.getElementById(btnMap[type]);
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  const langStr = currentLang === 'de' ? 'Deutsch' : 'English';
+  const voice = buildVoiceContext();
+
+  let prompt = '';
+  let outputEl = null;
+
+  if (type === 'linkedin') {
+    const topic = document.getElementById('li-topic').value || 'Executive Search in CEE';
+    const audience = getAudience('li-audience');
+    const tone = currentTone['li'] || 'Sachlich';
+    const ctx = document.getElementById('li-context').value;
+    prompt = `${voice}
+
+AUFGABE: LinkedIn-Kampagne mit 4 Posts für eine 4-Wochen-Sequenz.
+SPRACHE: ${langStr}
+THEMA: ${topic}
+ZIELGRUPPE: ${audience}
+TON: ${tone}
+ZUSÄTZLICHER KONTEXT: ${ctx || 'keiner'}
+
+WICHTIG — RECHERCHE: Suche zuerst nach aktuellen Studien, Daten und Markttrends zu diesem Thema (McKinsey, Korn Ferry, HBR, Spencer Stuart, WirtschaftsWoche etc.). Baue konkrete Zahlen und Erkenntnisse in die Posts ein.
+
+WICHTIG — FORMAT: Erstelle NUR 4 Posts im Ton "${tone}". KEIN Markdown (kein **fett**, kein *kursiv*). Nur plain text.
+
+Format EXAKT so:
+---WOCHE 1---
+[Post-Text, max. 1300 Zeichen, mit konkreten Fakten/Zahlen, Hashtags am Ende inkl. #Orxestra #OrxestraAustria]
+
+---WOCHE 2---
+[Post-Text + Hashtags]
+
+---WOCHE 3---
+[Post-Text + Hashtags]
+
+---WOCHE 4---
+[Post-Text + Hashtags]
+
+Roter Faden durch alle 4 Posts. Jeder Post steht für sich. Keine Wiederholungen. Substanziell und meinungsstark.`;
+
+    outputEl = document.getElementById('out-linkedin');
+
+  } else if (type === 'whitepaper-outline') {
+    const topic = document.getElementById('wp-topic').value || 'Leadership in CEE';
+    const audience = getAudience('wp-audience');
+    const thesis = document.getElementById('wp-thesis').value;
+    const docCtx = uploadedDocs['wp'] ? `\n\nEIGENE QUELLEN/PERSPEKTIVE (diese Kernbotschaft muss im Whitepaper enthalten sein):\n${uploadedDocs['wp']}` : '';
+    prompt = `${voice}
+
+AUFGABE: Outline für ein Thought-Leadership-Whitepaper.
+SPRACHE: ${langStr}
+TITEL/THEMA: ${topic}
+ZIELGRUPPE: ${audience}
+KERNTHESEN: ${thesis || 'keine spezifischen Vorgaben'}${docCtx}
+
+WICHTIG — RECHERCHE: Suche aktiv nach aktuellen Studien, Statistiken und Marktdaten zu diesem Thema. Plane konkrete Fakten und Quellen für jedes Kapitel ein.
+
+Erstelle eine Outline mit 6-8 Kapiteln. Für jedes Kapitel:
+- Prägnante Überschrift (kein Markdown)
+- 3-4 Stichpunkte: Kernaussagen + geplante Quellen/Daten
+- Geschätzte Wortanzahl
+
+Abschluss: Zusammenfassung der Gesamtbotschaft und Orxestra-Relevanz.`;
+
+    outputEl = document.getElementById('out-whitepaper');
+    document.getElementById('wp-output-title').textContent = 'Outline — Bitte überprüfen und dann "Volltext generieren"';
+
+  } else if (type === 'whitepaper-full') {
+    const topic = document.getElementById('wp-topic').value;
+    const thesis = document.getElementById('wp-thesis').value;
+    const length = document.getElementById('wp-length').value;
+    const lenStr = length==='short' ? '1.000–1.500' : length==='medium' ? '1.500–2.500' : '2.500–3.500';
+    const docCtx = uploadedDocs['wp'] ? `\n\nEIGENE QUELLEN/PERSPEKTIVE:\n${uploadedDocs['wp']}` : '';
+    prompt = `${voice}
+
+AUFGABE: Vollständiger Whitepaper-Text basierend auf dieser Outline:
+${wpOutlineText}
+
+SPRACHE: ${langStr}
+THEMA: ${topic}
+KERNTHESEN: ${thesis || ''}
+LÄNGE: ${lenStr} Wörter${docCtx}
+
+WICHTIG — RECHERCHE: Suche aktiv nach aktuellen Studien, Zahlen und Quellen für jeden Abschnitt. Zitiere konkrete Daten (z.B. "Laut McKinsey-Studie 2024...").
+
+WICHTIG — FORMAT: Kein Markdown (kein **fett**, kein *kursiv*). Schreibe plain text. Überschriften als eigenständige Zeilen in GROSSBUCHSTABEN.
+
+Struktur: Überschrift → substanzieller Text → nächste Überschrift. Klare Absätze. Am Ende: Zusammenfassung + Orxestra Kontakthinweis.`;
+
+    outputEl = document.getElementById('out-whitepaper');
+    document.getElementById('wp-output-title').textContent = 'Vollständiges Whitepaper';
+
+  } else if (type === 'newsletter') {
+    const quarter = document.getElementById('nl-quarter').value;
+    const focus = document.getElementById('nl-focus').value;
+    const topics = document.getElementById('nl-topics').value;
+    const editorial = document.getElementById('nl-editorial').value;
+    const docCtx = uploadedDocs['nl'] ? `\n\nEIGENE QUELLEN/PERSPEKTIVE (diese Kernbotschaft muss enthalten sein, aber stark ausbauen):\n${uploadedDocs['nl']}` : '';
+    prompt = `${voice}
+
+AUFGABE: Quartalsnewsletter für Orxestra — tiefgehend, substanziell, wie aus einem teuren Fachmagazin.
+SPRACHE: ${langStr}
+QUARTAL: ${quarter}
+SCHWERPUNKT: ${focus || 'Executive Leadership & Board Governance'}
+KERNTHEMEN: ${topics || 'Leadership, Executive Search, CEE Markt'}
+EDITORIALE NOTIZ: ${editorial || 'keine'}${docCtx}
+
+WICHTIG — RECHERCHE: Suche aktiv nach aktuellen Studien, Marktdaten und Trends zu den Kernthemen. Konkrete Zahlen und Quellen einbauen.
+
+WICHTIG — FORMAT: KEIN Markdown (kein **fett**, kein *kursiv*, keine ---). Schreibe plain text mit klaren Absätzen. Jeder Abschnitt durch eine leere Zeile getrennt.
+
+Struktur — schreibe jeden Abschnitt als eigenen Block:
+
+BETREFF: [prägnante Email-Betreffzeile]
+
+EDITORIAL
+[200 Wörter, persönliche Stimme des Managing Partners, konkret und meinungsstark]
+
+ARTIKEL 1: [Titel in Grossbuchstaben]
+[350-400 Wörter, tiefgehend, mit recherchierten Fakten und Zahlen, klare Absätze]
+
+ARTIKEL 2: [Titel in Grossbuchstaben]
+[350-400 Wörter, tiefgehend, mit recherchierten Fakten, klare Absätze]
+
+MARKTAUSBLICK ${quarter}
+[200 Wörter, konkrete Prognosen mit Daten-Basis]
+
+CLOSING
+[Kurzer persönlicher Abschluss + Kontaktaufforderung]`;
+
+    outputEl = document.getElementById('out-newsletter');
+
+  } else if (type === 'press') {
+    const anlass = document.getElementById('pr-anlass').value;
+    const content = document.getElementById('pr-content').value;
+    const date = document.getElementById('pr-date').value || 'Wien, ' + new Date().toLocaleDateString('de-AT', {day:'numeric',month:'long',year:'numeric'});
+    const quotePerson = document.getElementById('pr-quote-person').value || 'Sami Hamid, Managing Partner Orxestra';
+    const quoteMsg = document.getElementById('pr-quote-msg').value;
+    prompt = `${voice}
+
+Erstelle eine professionelle Presseaussendung im österreichischen OTS/APA-Format.
+SPRACHE: ${langStr}
+ANLASS: ${anlass}
+DATUM & ORT: ${date}
+INHALT: ${content}
+ZITAT VON: ${quotePerson}
+ZITAT-BOTSCHAFT: ${quoteMsg || 'professionelles Statement zum Anlass'}
+
+Format:
+- BETREFF: [prägnante Headline]
+- ORT/DATUM
+- Lead-Absatz (die wichtigste Aussage in 2-3 Sätzen)
+- Hintergrund / Details (3-4 Absätze)
+- Direktes Zitat von ${quotePerson}
+- Über Orxestra (Boilerplate): Orxestra — Stein & Partner GmbH ist Teil von Orxestra International, einem globalen Executive Search Netzwerk mit Präsenz in 40+ Ländern. Spezialisiert auf DACH/CEE Märkte, mit Büros in Wien sowie Partnerbüros in den wichtigsten CEE-Hauptstädten.
+- Kontakt: Sami Hamid | sami.hamid@orxestra.com | +43...`;
+
+    outputEl = document.getElementById('out-press');
+  }
+
+  // Call API
+  try {
+    const response = await fetch('/api/pulse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, type })
+    });
+    const data = await response.json();
+    const text = data.content?.[0]?.text || data.text || 'Fehler beim Generieren.';
+
+    // Handle output
+    if (type === 'linkedin') {
+      renderLinkedInPosts(text);
+      lastOutputs['linkedin'] = text;
+    } else if (type === 'whitepaper-outline') {
+      document.getElementById('wp-text').textContent = text;
+      wpOutlineText = text;
+      lastOutputs['whitepaper'] = text;
+      // Show full text button
+      document.getElementById('btn-wp-full').style.display = 'flex';
+    } else if (type === 'whitepaper-full') {
+      document.getElementById('wp-text').textContent = text;
+      lastOutputs['whitepaper'] = text;
+    } else if (type === 'newsletter') {
+      document.getElementById('nl-text').textContent = text;
+      lastOutputs['newsletter'] = text;
+    } else if (type === 'press') {
+      document.getElementById('pr-text').textContent = text;
+      lastOutputs['press'] = text;
+    }
+
+    outputEl.classList.add('visible');
+
+  } catch(e) {
+    showToast('Fehler: ' + e.message, 'error');
+  }
+
+  btn.classList.remove('loading');
+  btn.disabled = false;
+}
+
+// ── RENDER LINKEDIN POSTS ──
+function renderLinkedInPosts(text) {
+  const container = document.getElementById('posts-container');
+  container.innerHTML = '';
+  const tone = currentTone['li'] || 'Sachlich';
+
+  // Parse ---WOCHE N--- format
+  const parts = text.split(/---WOCHE\s*(\d+)---/).filter(s => s.trim());
+  const posts = [];
+  for (let i = 0; i < parts.length - 1; i += 2) {
+    const week = parts[i].trim();
+    const content = parts[i+1]?.trim();
+    if (week && content) posts.push({ week, content });
+  }
+
+  if (posts.length === 0) {
+    // Fallback: split by double newlines
+    const chunks = text.split(/\n{3,}/);
+    chunks.forEach((c, idx) => {
+      if (!c.trim()) return;
+      container.innerHTML += buildPostCard(String(idx+1), tone, c.trim());
+    });
+    return;
+  }
+
+  posts.forEach(p => {
+    container.innerHTML += buildPostCard(p.week, tone, p.content);
+  });
+}
+
+function buildPostCard(week, tone, content) {
+  const toneClass = tone.toLowerCase().includes('sachlich') ? 'badge-sachlich' :
+                    tone.toLowerCase().includes('pers') ? 'badge-persönlich' : 'badge-provokant';
+  const id = 'post_' + Math.random().toString(36).substr(2,6);
+
+  // Separate hashtags from content
+  const lines = content.split('\n');
+  const hashtagLines = lines.filter(l => l.trim().startsWith('#'));
+  const textLines = lines.filter(l => !l.trim().startsWith('#'));
+  const mainText = textLines.join('\n').trim();
+  const hashtags = hashtagLines.join(' ').trim();
+  const charCount = mainText.length;
+
+  const escapedText = mainText.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const hashtagHtml = hashtags
+    ? hashtags.split(/\s+/).filter(h => h.startsWith('#'))
+        .map(h => `<span class="post-hashtag">${h}</span>`).join('')
+    : '';
+
+  return `<div class="post-card">
+    <div class="post-card-header">
+      <div class="post-week-info">
+        <div class="post-week-num">${week.replace(/\D/g,'') || '?'}</div>
+        <div>
+          <div class="post-week-label">Woche ${week.replace(/\D/g,'') || '?'}</div>
+          <div class="post-week-sub">Veröffentlichung planen</div>
+        </div>
+      </div>
+      <span class="post-tone-badge ${toneClass}">${tone}</span>
+    </div>
+    <div class="post-linkedin-preview">
+      <div class="post-preview-author">
+        <div class="post-avatar">SH</div>
+        <div>
+          <div class="post-author-name">Sami Hamid</div>
+          <div class="post-author-title">Managing Partner · Orxestra</div>
+        </div>
+      </div>
+      <div class="post-content" id="${id}">${escapedText}</div>
+      ${hashtagHtml ? `<div class="post-hashtags">${hashtagHtml}</div>` : ''}
+    </div>
+    <div class="post-footer">
+      <span class="post-char-count">${charCount} Zeichen</span>
+      <button class="post-copy-btn" onclick="copyPostContent('${id}', '${id}_ht')">📋 Kopieren</button>
+    </div>
+    <span id="${id}_ht" style="display:none">${hashtags}</span>
+  </div>`;
+}
+
+// ── UPLOAD STATE ──
+const uploadedDocs = {}; // { wp: 'extracted text', nl: 'extracted text' }
+const uploadedPhotos = {}; // { 'nl-1': base64, 'nl-2': base64, 'wp-1': base64 }
+
+// ── DOC UPLOAD (PDF extraction via PDF.js) ──
+async function handleDocUpload(input, prefix) {
+  const file = input.files[0];
+  if (!file) return;
+  const zone = document.getElementById(prefix + '-doc-zone');
+  const nameEl = document.getElementById(prefix + '-doc-name');
+  nameEl.textContent = '⏳ Wird gelesen...';
+
+  try {
+    let text = '';
+    if (file.name.toLowerCase().endsWith('.pdf')) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
+      const pdf = await loadingTask.promise;
+      const maxPages = Math.min(pdf.numPages, 15);
+      for (let i = 1; i <= maxPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map(s => s.str).join(' ') + '\n';
+      }
+    } else {
+      // DOCX: use FileReader as text
+      text = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result || '');
+        reader.onerror = () => reject(new Error('Lesefehler'));
+        reader.readAsText(file);
+      });
+    }
+
+    if (!text.trim()) throw new Error('Kein Text gefunden');
+
+    uploadedDocs[prefix] = text.substring(0, 6000);
+    zone.classList.add('has-file');
+    nameEl.textContent = '✓ ' + file.name;
+    showToast('Dokument eingelesen ✓', 'success');
+  } catch(e) {
+    nameEl.textContent = '⚠ Fehler: ' + e.message;
+    showToast('Dokument konnte nicht gelesen werden', 'error');
+    console.error(e);
+  }
+}
+
+// ── PHOTO UPLOAD ──
+async function handlePhotoUpload(input, prefix, num) {
+  const file = input.files[0];
+  if (!file) return;
+  const key = prefix + '-' + num;
+  const preview = document.getElementById(prefix + '-photo-preview-' + num);
+  const nameEl = document.getElementById(prefix + '-photo-name-' + num);
+  const zone = document.getElementById(prefix + '-photo-zone' + (prefix==='wp' ? '' : '-' + num));
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedPhotos[key] = e.target.result; // full base64 data URL
+    if (preview) {
+      preview.src = e.target.result;
+      preview.classList.add('visible');
+    }
+    if (zone) zone.classList.add('has-file');
+    if (nameEl) nameEl.textContent = '✓ ' + file.name;
+    showToast('Foto geladen ✓', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── HTML MAGAZINE LAYOUT DOWNLOAD ──
+function downloadDocx(format) {
+  const text = lastOutputs[format];
+  if (!text) { showToast('Bitte zuerst Inhalt generieren', 'error'); return; }
+
+  if (format === 'newsletter') {
+    renderNewsletterHTML(text);
+  } else if (format === 'whitepaper') {
+    renderWhitepaperHTML(text);
+  } else {
+    renderSimpleHTML(format, text);
+  }
+}
+
+function renderNewsletterHTML(text) {
+  const quarter = document.getElementById('nl-quarter')?.value || '';
+  const focus = document.getElementById('nl-focus')?.value || '';
+  const date = new Date().toLocaleDateString('de-AT', {day:'2-digit', month:'long', year:'numeric'});
+
+  const clean = (t) => (t || '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/^#{1,3}\s+/gm, '')
+    .replace(/---+/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .trim();
+
+  const sections = parseNewsletterSections(text);
+
+  // Two-column articles: left = number + title + teaser, right = full body
+  const articleBlocks = sections.articles.map((art, i) => {
+    const body = clean(art.body);
+    const paras = body.split('\n').filter(l => l.trim());
+    const teaser = paras[0] || '';
+    const rest = paras.slice(1).map(p => `<p>${p}</p>`).join('');
+    const accentColors = ['#FF6A42','#6BCBC2','#24629B','#081D4D'];
+    const accent = accentColors[i % accentColors.length];
+    return `
+    <div class="art-row">
+      <div class="art-left" style="border-top:3px solid ${accent}">
+        <div class="art-num" style="color:${accent}">0${i+1}</div>
+        <h2 class="art-title">${clean(art.title || '')}</h2>
+        <p class="art-teaser">${teaser}</p>
+      </div>
+      <div class="art-right">
+        ${rest || (teaser ? `<p>${teaser}</p>` : '')}
+      </div>
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Orxestra Newsletter ${quarter}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#1a1f2e;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.print-bar{position:sticky;top:0;z-index:100;background:#0d1219;padding:10px 28px;display:flex;align-items:center;justify-content:space-between}
+.print-bar span{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:.5px}
+.print-btn{padding:6px 18px;background:#FF6A42;color:white;border:none;border-radius:2px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:1px;text-transform:uppercase}
+
+/* PAGE */
+.page{max-width:720px;margin:24px auto;background:white;border:1px solid #2a3040;box-shadow:6px 6px 0 rgba(0,0,0,0.4)}
+
+/* HERO BAND — typographic, no photo needed */
+.hero-band{background:#081D4D;padding:48px 52px 40px;position:relative;overflow:hidden}
+.hero-band::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;border:40px solid rgba(255,106,66,0.12);border-radius:50%}
+.hero-band::after{content:'';position:absolute;right:60px;bottom:-60px;width:160px;height:160px;border:30px solid rgba(107,203,194,0.08);border-radius:50%}
+.hb-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px}
+.hb-brand{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:5px}
+.hb-quarter{text-align:right}
+.hb-q-big{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;color:white;line-height:1;letter-spacing:-1px}
+.hb-q-sub{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2.5px;margin-top:4px}
+.hb-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:white;line-height:1.2;letter-spacing:-.5px;margin-bottom:16px;position:relative;z-index:1}
+.hb-focus-bar{display:flex;align-items:center;gap:12px}
+.hb-focus-line{width:32px;height:2px;background:#FF6A42;flex-shrink:0}
+.hb-focus-text{font-size:11px;font-weight:500;color:#FF6A42;text-transform:uppercase;letter-spacing:2px}
+
+/* EDITORIAL */
+.editorial{display:grid;grid-template-columns:3px 1fr;background:#F4F5F8;border-bottom:1px solid #e0e2e8}
+.ed-stripe{background:linear-gradient(to bottom,#FF6A42,#6BCBC2)}
+.ed-body{padding:32px 44px}
+.sec-label{font-size:8px;font-weight:700;color:#081D4D;text-transform:uppercase;letter-spacing:4px;margin-bottom:14px}
+.ed-text{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;line-height:1.9;color:#222;font-style:italic}
+.ed-text p{margin-bottom:12px}
+.ed-sig{margin-top:16px;font-size:11px;font-weight:600;color:#081D4D;letter-spacing:.3px}
+
+/* ARTICLES */
+.articles{padding:0 52px}
+
+.art-row{display:grid;grid-template-columns:200px 1fr;gap:0;border-bottom:1px solid #e8e8e8}
+.art-row:last-child{border-bottom:none}
+
+.art-left{padding:32px 24px 32px 0;border-right:1px solid #e8e8e8}
+.art-num{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:10px}
+.art-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:#081D4D;line-height:1.3;margin-bottom:12px}
+.art-teaser{font-size:11px;line-height:1.7;color:#888;font-style:italic}
+
+.art-right{padding:32px 0 32px 28px}
+.art-right p{font-size:13px;line-height:1.85;color:#333;margin-bottom:11px}
+.art-right p:last-child{margin-bottom:0}
+
+/* OUTLOOK */
+.outlook{background:#081D4D;padding:36px 52px;position:relative;overflow:hidden}
+.outlook::after{content:'MARKT';position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:120px;font-weight:700;color:rgba(255,255,255,0.03);line-height:1;pointer-events:none}
+.outlook-label{font-size:8px;font-weight:700;color:#6BCBC2;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
+.outlook-quarter{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:white;margin-bottom:18px}
+.outlook p{font-size:12.5px;line-height:1.85;color:rgba(255,255,255,0.6);margin-bottom:10px}
+.outlook p:last-child{margin-bottom:0}
+
+/* SIGNPOST — teal accent block */
+.signpost{background:#6BCBC2;padding:20px 52px;display:flex;align-items:center;gap:20px}
+.sp-text{font-size:11px;font-weight:600;color:#081D4D;letter-spacing:.3px}
+.sp-arrow{font-size:18px;color:#081D4D;margin-left:auto;opacity:.6}
+
+/* ABOUT */
+.about{padding:22px 52px;background:#F4F5F8;border-top:1px solid #e0e2e8}
+.about-label{font-size:8px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:3.5px;margin-bottom:6px}
+.about p{font-size:11px;line-height:1.7;color:#888}
+
+/* FOOTER */
+.footer{background:#060d1a;padding:22px 52px;display:flex;align-items:center;justify-content:space-between}
+.footer-brand{font-size:8px;font-weight:700;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:6px}
+.footer-right{font-size:10px;color:rgba(255,255,255,0.35);line-height:1.9;text-align:right}
+.footer-right a{color:rgba(255,255,255,0.5);text-decoration:none}
+
+@media print{
+  body{background:white}
+  .print-bar{display:none}
+  .page{box-shadow:none;margin:0;max-width:100%;border:1px solid #ccc}
+  .hero-band::before,.hero-band::after{display:none}
+  .outlook::after{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <span>Orxestra · Newsletter ${quarter}</span>
+  <button class="print-btn" onclick="window.print()">Als PDF speichern</button>
+</div>
+
+<div class="page">
+
+  <div class="hero-band">
+    <div class="hb-top">
+      <div class="hb-brand">Orxestra · Executive Search &amp; Leadership Advisory · Austria</div>
+      <div class="hb-quarter">
+        <div class="hb-q-big">${quarter}</div>
+        <div class="hb-q-sub">${date}</div>
+      </div>
+    </div>
+    <div class="hb-title">${focus || 'Leadership &amp; Executive Search'}</div>
+    <div class="hb-focus-bar">
+      <div class="hb-focus-line"></div>
+      <div class="hb-focus-text">Orxestra Newsletter</div>
+    </div>
+  </div>
+
+  <div class="editorial">
+    <div class="ed-stripe"></div>
+    <div class="ed-body">
+      <div class="sec-label">Editorial</div>
+      <div class="ed-text">
+        ${clean(sections.editorial).split('\n').filter(l => l.trim()).map(l => `<p>${l}</p>`).join('')}
+      </div>
+      <div class="ed-sig">— Sami Hamid, Managing Partner Orxestra</div>
+    </div>
+  </div>
+
+  <div class="articles">
+    ${articleBlocks}
+  </div>
+
+  ${sections.outlook ? `
+  <div class="outlook">
+    <div class="outlook-label">Marktausblick</div>
+    <div class="outlook-quarter">${quarter}</div>
+    ${clean(sections.outlook).split('\n').filter(l => l.trim()).map(l => `<p>${l}</p>`).join('')}
+  </div>` : ''}
+
+  <div class="signpost">
+    <div class="sp-text">Orxestra — Stein &amp; Partner GmbH · Executive Search &amp; Leadership Advisory · DACH/CEE</div>
+    <div class="sp-arrow">→</div>
+  </div>
+
+  <div class="about">
+    <div class="about-label">Über Orxestra International</div>
+    <p>Orxestra International ist ein globales Executive Search Netzwerk mit Präsenz in 40+ Ländern. Orxestra ist spezialisiert auf die Besetzung von Führungspositionen im DACH/CEE-Raum.</p>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">Orxestra</div>
+    <div class="footer-right">
+      Sami Hamid · Managing Partner<br>
+      <a href="mailto:sami.hamid@orxestra.com">sami.hamid@orxestra.com</a> · www.orxestra.com/austria
+    </div>
+  </div>
+
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  window.open(URL.createObjectURL(blob), '_blank');
+  showToast('Newsletter geöffnet — "Als PDF speichern" oben ✓', 'success');
+}
+
+function parseNewsletterSections(text) {
+  const lines = text.split('\n');
+  let editorial = '';
+  let outlook = '';
+  const articles = [];
+  let currentArticle = null;
+  let mode = 'start';
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) continue;
+
+    // Detect section headers from new structured format
+    if (/^BETREFF:/i.test(t)) { mode = 'skip'; continue; }
+    if (/^EDITORIAL$/i.test(t)) { mode = 'editorial'; continue; }
+    if (/^MARKTAUSBLICK/i.test(t)) {
+      if (currentArticle) { articles.push(currentArticle); currentArticle = null; }
+      mode = 'outlook'; continue;
+    }
+    if (/^CLOSING$/i.test(t) || /^KONTAKT$/i.test(t)) {
+      if (currentArticle) { articles.push(currentArticle); currentArticle = null; }
+      mode = 'skip'; continue;
+    }
+    if (/^ARTIKEL\s+\d+:/i.test(t)) {
+      if (currentArticle) articles.push(currentArticle);
+      const title = t.replace(/^ARTIKEL\s+\d+:\s*/i, '');
+      currentArticle = { title, body: '' };
+      mode = 'article'; continue;
+    }
+
+    // Also handle ## headings
+    if (/^##?\s+/.test(t) && mode !== 'editorial') {
+      if (currentArticle) articles.push(currentArticle);
+      currentArticle = { title: t.replace(/^#+\s*/, ''), body: '' };
+      mode = 'article'; continue;
+    }
+
+    if (mode === 'skip') continue;
+    if (mode === 'outlook') { outlook += (outlook ? '\n' : '') + t; }
+    else if (mode === 'article' && currentArticle) { currentArticle.body += (currentArticle.body ? '\n' : '') + t; }
+    else { editorial += (editorial ? '\n' : '') + t; }
+  }
+  if (currentArticle) articles.push(currentArticle);
+
+  // Fallback if nothing parsed
+  if (!editorial && articles.length === 0) {
+    const chunks = text.split(/\n{2,}/);
+    if (chunks[0]) editorial = chunks[0].trim();
+    chunks.slice(1).forEach(c => {
+      if (c.trim()) articles.push({ title: '', body: c.trim() });
+    });
+  }
+
+  return { editorial, articles: articles.slice(0, 4), outlook };
+}
+
+function renderWhitepaperHTML(text) {
+  const topic = document.getElementById('wp-topic')?.value || 'Whitepaper';
+  const date = new Date().toLocaleDateString('de-AT', {day:'2-digit', month:'long', year:'numeric'});
+  const photo1 = uploadedPhotos['wp-1'] || '';
+
+  const lines = text.split('\n');
+  let bodyHtml = '';
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) { bodyHtml += '<br>'; continue; }
+    if (t.startsWith('## ')) bodyHtml += `<h2>${t.replace(/^##\s*/,'')}</h2>`;
+    else if (t.startsWith('# ')) bodyHtml += `<h1>${t.replace(/^#\s*/,'')}</h1>`;
+    else if (t.startsWith('- ') || t.startsWith('• ')) bodyHtml += `<li>${t.replace(/^[-•]\s*/,'')}</li>`;
+    else bodyHtml += `<p>${t}</p>`;
+  }
+
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>${topic} · Orxestra</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f0f2f5; }
+  .page { max-width: 780px; margin: 0 auto; background: white; box-shadow: 0 4px 40px rgba(0,0,0,0.15); }
+  .wp-header { background: #081D4D; padding: 48px 48px 36px; }
+  .wp-label { font-size: 10px; font-weight: 700; color: #6BCBC2; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; }
+  .wp-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; color: white; line-height: 1.25; margin-bottom: 16px; }
+  .wp-meta { font-size: 12px; color: rgba(255,255,255,0.45); }
+  .wp-accent { height: 4px; background: linear-gradient(to right, #FF6A42, #6BCBC2); }
+  ${photo1 ? `.wp-hero { height: 260px; overflow: hidden; } .wp-hero img { width: 100%; height: 100%; object-fit: cover; }` : ''}
+  .wp-body { padding: 48px; }
+  .wp-body h1 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: #081D4D; margin: 40px 0 12px; padding-bottom: 10px; border-bottom: 3px solid #FF6A42; }
+  .wp-body h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: #081D4D; margin: 32px 0 10px; padding-bottom: 8px; border-bottom: 1.5px solid #EEF0F4; }
+  .wp-body p { font-size: 14px; line-height: 1.85; color: #4A4F5C; margin-bottom: 14px; }
+  .wp-body li { font-size: 14px; line-height: 1.7; color: #4A4F5C; margin: 6px 0 6px 20px; }
+  .wp-body br { display: block; margin: 6px 0; content: ''; }
+  .wp-footer { background: #081D4D; padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+  .wp-footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: white; font-weight: 700; }
+  .wp-footer-brand span { color: #FF6A42; }
+  .wp-footer-info { font-size: 11px; color: rgba(255,255,255,0.4); text-align: right; line-height: 1.7; }
+  .print-bar { background: #FF6A42; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .print-bar span { color: white; font-size: 13px; font-weight: 600; }
+  .print-btn { padding: 8px 20px; background: white; color: #FF6A42; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  @media print { body { background: white; } .page { box-shadow: none; } .print-bar { display: none; } }
+</style>
+</head>
+<body>
+<div class="print-bar">
+  <span>📄 Whitepaper Vorschau · Orxestra</span>
+  <button class="print-btn" onclick="window.print()">🖨 Als PDF drucken</button>
+</div>
+<div class="page">
+  <div class="wp-header">
+    <div class="wp-label">Whitepaper · Orxestra</div>
+    <div class="wp-title">${topic}</div>
+    <div class="wp-meta">${date} · Orxestra — Stein & Partner GmbH</div>
+  </div>
+  <div class="wp-accent"></div>
+  ${photo1 ? `<div class="wp-hero"><img src="${photo1}" alt=""></div>` : ''}
+  <div class="wp-body">${bodyHtml}</div>
+  <div class="wp-footer">
+    <div class="wp-footer-brand">SIGNI<span>UM</span></div>
+    <div class="wp-footer-info">Sami Hamid · Managing Partner<br>sami.hamid@orxestra.com · www.orxestra.com</div>
+  </div>
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  window.open(URL.createObjectURL(blob), '_blank');
+  showToast('Whitepaper geöffnet — "Als PDF drucken" oben ✓', 'success');
+}
+
+function renderSimpleHTML(format, text) {
+  const titles = { press: 'Presseaussendung', linkedin: 'LinkedIn-Kampagne' };
+  const date = new Date().toLocaleDateString('de-AT', {day:'2-digit',month:'long',year:'numeric'});
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'DM Sans', sans-serif; background: #f0f2f5; }
+  .page { max-width: 720px; margin: 40px auto; background: white; border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); overflow: hidden; }
+  .ph { background: #081D4D; padding: 32px 40px; }
+  .ph h1 { color: white; font-size: 24px; font-weight: 700; }
+  .ph p { color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 6px; }
+  .pb { padding: 40px; font-size: 14px; line-height: 1.85; color: #4A4F5C; white-space: pre-wrap; }
+  .pf { background: #081D4D; padding: 16px 40px; font-size: 11px; color: rgba(255,255,255,0.4); }
+  .print-bar { background: #FF6A42; padding: 10px 24px; display:flex; justify-content:space-between; align-items:center; }
+  .print-bar span { color:white; font-size:13px; font-weight:600; }
+  .print-btn { padding:7px 18px; background:white; color:#FF6A42; border:none; border-radius:5px; font-size:13px; font-weight:700; cursor:pointer; }
+  @media print { .print-bar { display:none; } body { background:white; } .page { box-shadow:none; } }
+</style></head><body>
+<div class="print-bar"><span>Orxestra · ${titles[format]||format}</span><button class="print-btn" onclick="window.print()">🖨 Als PDF drucken</button></div>
+<div class="page">
+  <div class="ph"><h1>${titles[format]||format}</h1><p>${date} · Orxestra</p></div>
+  <div class="pb">${text.replace(/</g,'&lt;')}</div>
+  <div class="pf">© ${new Date().getFullYear()} Orxestra — Stein & Partner GmbH</div>
+</div></body></html>`;
+  window.open(URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})), '_blank');
+  showToast('Dokument geöffnet — "Als PDF drucken" ✓', 'success');
+}
+
+// ── ARCHIVE ──
+async function loadArchive() {
+  const { data } = await sb.from('pulse_archive').select('*').order('created_at', { ascending: false });
+  archiveData = data || [];
+}
+
+async function saveToArchive(format) {
+  const text = lastOutputs[format];
+  if (!text) return;
+  const topicMap = {
+    linkedin: document.getElementById('li-topic').value,
+    whitepaper: document.getElementById('wp-topic').value,
+    newsletter: document.getElementById('nl-quarter').value + ': ' + document.getElementById('nl-focus').value,
+    press: document.getElementById('pr-anlass').value
+  };
+  const { error } = await sb.from('pulse_archive').insert({
+    format,
+    language: currentLang,
+    topic: topicMap[format] || 'Unbekannt',
+    content: text,
+    created_at: new Date().toISOString()
+  });
+  if (!error) {
+    showToast('Im Archiv gespeichert ✓', 'success');
+    loadArchive();
+  } else {
+    showToast('Speichern fehlgeschlagen', 'error');
+    console.error(error);
+  }
+}
+
+function renderArchive(filter = 'all') {
+  const tbody = document.getElementById('archive-tbody');
+  const filtered = filter === 'all' ? archiveData : archiveData.filter(r => r.format === filter);
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+      <div class="empty-icon">📂</div>
+      <p>Noch keine Inhalte archiviert.</p>
+    </div></td></tr>`;
+    return;
+  }
+
+  const formatIcons = { linkedin:'💼', whitepaper:'📄', newsletter:'📬', press:'📢' };
+  const formatLabels = { linkedin:'LinkedIn', whitepaper:'Whitepaper', newsletter:'Newsletter', press:'Presseaussendung' };
+
+  tbody.innerHTML = filtered.map(row => {
+    const date = new Date(row.created_at).toLocaleDateString('de-AT', {day:'2-digit',month:'2-digit',year:'numeric'});
+    const fmt = row.format || 'unknown';
+    const lang = row.language || 'de';
+    const topic = (row.topic || '').substring(0, 60) + (row.topic?.length > 60 ? '…' : '');
+    return `<tr>
+      <td>${date}</td>
+      <td><span class="format-badge badge-${fmt}">${formatIcons[fmt]||''} ${formatLabels[fmt]||fmt}</span></td>
+      <td>${topic}</td>
+      <td><span class="lang-badge lang-${lang}">${lang.toUpperCase()}</span></td>
+      <td><button class="archive-view-btn" onclick="viewArchiveItem(${row.id})">Anzeigen</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterArchive(filter, el) {
+  document.querySelectorAll('#archive-filters .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderArchive(filter);
+}
+
+function viewArchiveItem(id) {
+  const row = archiveData.find(r => r.id === id);
+  if (!row) return;
+  document.getElementById('archive-modal-title').textContent = row.topic || 'Inhalt';
+  document.getElementById('archive-modal-content').textContent = row.content;
+  document.getElementById('archive-modal').classList.add('open');
+}
+
+function copyArchiveContent() {
+  const text = document.getElementById('archive-modal-content').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Kopiert ✓', 'success'));
+}
+
+function exportCSV() {
+  const rows = [['Datum','Format','Sprache','Thema']];
+  archiveData.forEach(r => {
+    rows.push([r.created_at, r.format, r.language, r.topic]);
+  });
+  const csv = rows.map(r => r.map(c => `"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = 'pulse_archiv.csv';
+  a.click();
+}
+
+// ── COPY ──
+function copyPostContent(textId, htId) {
+  const text = document.getElementById(textId)?.textContent || '';
+  const ht = document.getElementById(htId)?.textContent || '';
+  const full = ht ? text + '\n\n' + ht : text;
+  navigator.clipboard.writeText(full).then(() => showToast('Post kopiert ✓', 'success'));
+}
+
+function copyText(elId) {
+  const text = document.getElementById(elId)?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => showToast('Kopiert ✓', 'success'));
+}
+
+function copyAll(format) {
+  const text = lastOutputs[format] || '';
+  navigator.clipboard.writeText(text).then(() => showToast('Alles kopiert ✓', 'success'));
+}
+
+// ── TOAST ──
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Enter key on auth
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('auth-screen').style.display !== 'none') doAuth();
+});
+</script>
+</body>
+</html>

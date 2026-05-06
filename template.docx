@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>x-SCOUT | Orxestra Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Petrona:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #081D4D;
+    --orange: #FF6A42;
+    --teal: #6BCBC2;
+    --light-blue: #24629B;
+    --bg: #F5F6F8;
+    --white: #FFFFFF;
+    --text: #1A1A2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --success: #10B981;
+    --danger: #EF4444;
+    --navy-light: #0D2B6B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Calibri', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Header */
+  .header { background: var(--navy); padding: 0 32px; display: flex; align-items: center; height: 60px; border-bottom: 3px solid var(--orange); }
+  .header-brand { display: flex; align-items: center; gap: 16px; }
+  .header-logo { font-family: 'Petrona', serif; font-size: 22px; font-weight: 700; color: white; letter-spacing: 2px; }
+  .header-sep { width: 1px; height: 28px; background: rgba(255,255,255,0.2); }
+  .header-tool { font-size: 14px; color: rgba(255,255,255,0.7); letter-spacing: 1px; text-transform: uppercase; }
+  .header-back { margin-left: auto; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .header-back:hover { color: var(--orange); }
+
+  /* Layout */
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .page-title { font-family: 'Petrona', serif; font-size: 28px; color: var(--navy); margin-bottom: 6px; }
+  .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 28px; }
+  .tab { padding: 10px 24px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+  .tab.active { color: var(--navy); border-color: var(--orange); }
+  .tab:hover:not(.active) { color: var(--navy); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--white); border-radius: 8px; border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+  /* Form */
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+  textarea, input[type=text] { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--white); transition: border 0.2s; resize: vertical; }
+  textarea:focus, input[type=text]:focus { outline: none; border-color: var(--light-blue); }
+  .field { margin-bottom: 16px; }
+  .field-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Upload zone */
+  .upload-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg); }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--orange); background: #FFF5F3; }
+  .upload-zone input { display: none; }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-text { font-size: 14px; color: var(--muted); }
+  .upload-text strong { color: var(--navy); }
+  .file-badge { display: inline-flex; align-items: center; gap: 8px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 6px; padding: 6px 12px; font-size: 13px; color: var(--navy); margin-top: 10px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-primary { background: var(--orange); color: white; }
+  .btn-primary:hover { background: #e55a35; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: var(--navy); color: white; }
+  .btn-secondary:hover { background: var(--navy-light); }
+  .btn-outline { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+  .btn-outline:hover { background: var(--navy); color: white; }
+  .btn-sm { padding: 7px 14px; font-size: 13px; }
+
+  /* Loading */
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-msg { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
+
+  /* Results */
+  .results { margin-top: 24px; }
+  .result-section { margin-bottom: 24px; }
+  .result-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+
+  /* LinkedIn criteria */
+  .criteria-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .criteria-box { background: var(--bg); border-radius: 6px; padding: 12px 14px; border-left: 3px solid var(--orange); }
+  .criteria-box-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .criteria-box-value { font-size: 13px; color: var(--text); }
+  .tag { display: inline-block; background: #EFF6FF; color: var(--navy); border: 1px solid #BFDBFE; border-radius: 4px; padding: 2px 8px; font-size: 12px; margin: 2px 2px 2px 0; }
+
+  /* Steps */
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .step::before { counter-increment: step; content: counter(step); flex-shrink: 0; width: 24px; height: 24px; background: var(--navy); color: white; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step-text { font-size: 13px; color: var(--text); padding-top: 3px; }
+
+  /* AJD Preview */
+  .ajd-preview { background: #FAFBFC; border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+  .ajd-title { font-family: 'Petrona', serif; font-size: 22px; color: var(--navy); font-weight: 700; margin-bottom: 4px; }
+  .ajd-meta { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .ajd-section { margin-bottom: 16px; }
+  .ajd-section-title { font-size: 11px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; background: var(--navy); padding: 5px 10px; border-radius: 3px; margin-bottom: 8px; display: inline-block; }
+  .ajd-body { font-size: 13px; color: var(--text); line-height: 1.6; }
+  .ajd-list { list-style: none; padding: 0; }
+  .ajd-list li { font-size: 13px; color: var(--text); padding: 3px 0 3px 16px; position: relative; }
+  .ajd-list li::before { content: '▪'; position: absolute; left: 0; color: var(--orange); }
+
+  /* Candidate cards */
+  .candidate-input { border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; position: relative; }
+  .candidate-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .candidate-num { width: 28px; height: 28px; background: var(--navy); color: white; border-radius: 50%; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .candidate-remove { margin-left: auto; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 4px; }
+  .candidate-remove:hover { color: var(--danger); }
+
+  /* Screening result */
+  .screen-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+  .screen-card-header { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .fit-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .fit-high { background: #D1FAE5; color: #065F46; }
+  .fit-med { background: #FEF3C7; color: #92400E; }
+  .fit-low { background: #FEE2E2; color: #991B1B; }
+  .screen-card-body { padding: 16px; }
+  .screen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .inmail-box { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 6px; padding: 12px; font-size: 13px; color: var(--text); line-height: 1.6; }
+  .copy-btn { font-size: 12px; color: var(--light-blue); background: none; border: none; cursor: pointer; padding: 0; margin-top: 6px; }
+  .copy-btn:hover { text-decoration: underline; }
+
+  .status-msg { font-size: 13px; margin-top: 8px; }
+  .status-msg.success { color: var(--success); }
+  .status-msg.error { color: var(--danger); }
+
+  /* Actions row */
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+
+  @media (max-width: 600px) {
+    .criteria-grid, .screen-grid { grid-template-columns: 1fr; }
+    .container { padding: 16px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">SIGNIUM</div>
+    <div class="header-sep"></div>
+    <div class="header-tool">SCOUT — Research & Screening</div>
+  </div>
+  <a href="/" class="header-back">← Suite</a>
+</div>
+
+<div class="container">
+  <div class="page-title">x-SCOUT</div>
+  <div class="page-sub">Jobprofil analysieren · LinkedIn-Suchkriterien generieren · Anonymes Jobprofil erstellen · Kandidaten screenen</div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('tab-jd', this)">① Jobprofil &amp; Suchkriterien</div>
+    <div class="tab" onclick="switchTab('tab-screen', this)">② Kandidaten screenen</div>
+  </div>
+
+  <!-- ═══ TAB 1: JD-ANALYSE ═══ -->
+  <div id="tab-jd" class="tab-panel active">
+
+    <div class="card">
+      <div class="card-title">Jobprofil hochladen</div>
+
+      <div class="field">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" 
+             ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <input type="file" id="fileInput" accept=".pdf,.docx,.doc" onchange="handleFile(this.files[0])">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">
+            <strong>PDF oder Word hochladen</strong><br>
+            Jobprofil, Briefing-Dokument, Anforderungsbeschreibung
+          </div>
+          <div id="fileBadge"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Zusätzliche Berater-Notizen (optional)</label>
+        <textarea id="jdNotes" rows="3" placeholder="Besondere Anforderungen, kultureller Fit, Kontext vom Klienten-Gespräch..."></textarea>
+        <div class="field-hint">Diese Notizen fließen in die LinkedIn-Kriterien und das anonyme Jobprofil ein.</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="btnAnalyze" onclick="analyzeJD()">
+          <span>🔍 Analysieren & Kriterien generieren</span>
+        </button>
+        <span id="analyzeStatus" class="status-msg"></span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="jdResults" style="display:none;">
+
+      <!-- LinkedIn Kriterien -->
+      <div class="card">
+        <div class="card-title">🎯 LinkedIn Recruiter Suchkriterien</div>
+        <div id="criteriaOutput"></div>
+      </div>
+
+      <!-- LinkedIn Anleitung -->
+      <div class="card">
+        <div class="card-title">📋 Schritt-für-Schritt Anleitung (LinkedIn Recruiter Light)</div>
+        <div id="stepsOutput" class="steps"></div>
+      </div>
+
+      <!-- AJD Preview -->
+      <div class="card">
+        <div class="card-title">📄 Anonymes Jobprofil (Vorschau)</div>
+        <div id="ajdPreview" class="ajd-preview"></div>
+        <div class="actions" style="margin-top:16px;">
+          <button class="btn btn-secondary" id="btnDownloadAjd" onclick="downloadAjd()">
+            ⬇ Als DOCX herunterladen
+          </button>
+          <span id="ajdDownloadStatus" class="status-msg"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ TAB 2: KANDIDATEN-SCREENING ═══ -->
+  <div id="tab-screen" class="tab-panel">
+
+    <div class="card">
+      <div class="card-title">Mandat / Suchprofil</div>
+      <div class="field">
+        <label>Beschreibung der gesuchten Position</label>
+        <textarea id="screenMandate" rows="4" placeholder="Position, Unternehmen (anonym), Anforderungen, Must-haves...&#10;Tipp: Einfach die LinkedIn-Kriterien aus Tab 1 hier einkopieren."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Kandidaten-Profile</div>
+      <div class="field-hint" style="margin-bottom:12px;">
+        So geht's: In LinkedIn auf ein Profil klicken → <strong>More → Save to PDF</strong> → PDF hier hochladen. Oder Profil-Text kopieren und einfügen.
+      </div>
+
+      <div id="candidateList"></div>
+
+      <button class="btn btn-outline btn-sm" onclick="addCandidate()">+ Kandidat hinzufügen</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnScreen" onclick="screenCandidates()">
+        ⚡ Kandidaten screenen
+      </button>
+      <span id="screenStatus" class="status-msg"></span>
+    </div>
+
+    <div id="screenResults" class="results"></div>
+
+  </div>
+</div>
+
+<script>
+  let fileBase64 = null;
+  let fileMediaType = null;
+  let currentJdData = null;
+  let candidateCount = 0;
+  const candidates = {}; // { id: { name, text, fileBase64, mediaType } }
+
+  // ── TAB SWITCH ──
+  function switchTab(id, el) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // ── FILE UPLOAD (JD) ──
+  function handleDrag(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
+  function handleDragLeave(e) { document.getElementById('uploadZone').classList.remove('dragover'); }
+  function handleDrop(e) { e.preventDefault(); document.getElementById('uploadZone').classList.remove('dragover'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }
+
+  function handleFile(file) {
+    if (!file) return;
+    const badge = document.getElementById('fileBadge');
+    badge.innerHTML = `<div class="file-badge">📎 ${file.name} (${(file.size/1024).toFixed(0)} KB)</div>`;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const parts = e.target.result.split(',');
+      fileBase64 = parts[1];
+      fileMediaType = file.name.endsWith('.pdf') ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── ANALYZE JD ──
+  async function analyzeJD() {
+    if (!fileBase64) { alert('Bitte zuerst ein Dokument hochladen.'); return; }
+    const btn = document.getElementById('btnAnalyze');
+    const status = document.getElementById('analyzeStatus');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Analysiere...';
+    status.textContent = '';
+
+    try {
+      const res = await fetch('/api/scout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'jd', fileBase64, mediaType: fileMediaType, notes: document.getElementById('jdNotes').value })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Unbekannter Fehler');
+
+      currentJdData = json.data;
+      renderJdResults(json.data);
+      document.getElementById('jdResults').style.display = 'block';
+      document.getElementById('jdResults').scrollIntoView({ behavior: 'smooth' });
+      status.textContent = '✓ Analyse abgeschlossen';
+      status.className = 'status-msg success';
+    } catch (err) {
+      status.textContent = 'Fehler: ' + err.message;
+      status.className = 'status-msg error';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span>🔍 Analysieren & Kriterien generieren</span>';
+    }
+  }
+
+  function renderJdResults(d) {
+    const lc = d.linkedin_criteria || {};
+
+    // Criteria grid
+    const criteriaHtml = `
+      <div class="criteria-grid">
+        <div class="criteria-box">
+          <div class="criteria-box-label">Job Titles (einer davon)</div>
+          <div class="criteria-box-value">${(lc.job_titles || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="criteria-box">
+          <div class="criteria-box-label">Keywords</div>
+          <div class="criteria-box-value">${(lc.keywords || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="criteria-box">
+          <div class="criteria-box-label">Seniority</div>
+          <div class="criteria-box-value">${(lc.seniority || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="criteria-box">
+          <div class="criteria-box-label">Berufserfahrung</div>
+          <div class="criteria-box-value">${lc.years_experience || '—'}</div>
+        </div>
+        <div class="criteria-box">
+          <div class="criteria-box-label">Branchen</div>
+          <div class="criteria-box-value">${(lc.industries || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="criteria-box">
+          <div class="criteria-box-label">Geografie</div>
+          <div class="criteria-box-value">${(lc.geography || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>`;
+    document.getElementById('criteriaOutput').innerHTML = criteriaHtml;
+
+    // Steps
+    const stepsHtml = (d.linkedin_instructions || []).map(s =>
+      `<div class="step"><div class="step-text">${s}</div></div>`
+    ).join('');
+    document.getElementById('stepsOutput').innerHTML = stepsHtml;
+
+    // AJD Preview
+    const ajd = d.ajd || {};
+    document.getElementById('ajdPreview').innerHTML = `
+      <div class="ajd-title">${ajd.position || '—'}</div>
+      <div class="ajd-meta">${d.sector || ''} | ${d.location || ''}</div>
+      <div class="ajd-section">
+        <div class="ajd-section-title">Das Unternehmen</div>
+        <div class="ajd-body">${ajd.company_context || ''}</div>
+        <br><div class="ajd-body">${ajd.role_context || ''}</div>
+      </div>
+      <div class="ajd-section">
+        <div class="ajd-section-title">Aufgaben & Verantwortung</div>
+        <ul class="ajd-list">${(ajd.responsibilities || []).map(r => `<li>${r}</li>`).join('')}</ul>
+      </div>
+      <div class="ajd-section">
+        <div class="ajd-section-title">Anforderungsprofil</div>
+        <ul class="ajd-list">${(ajd.requirements || []).map(r => `<li>${r}</li>`).join('')}</ul>
+      </div>
+      <div class="ajd-section">
+        <div class="ajd-section-title">Führungsprofil</div>
+        <div class="ajd-body">${ajd.leadership_profile || ''}</div>
+      </div>
+      <div class="ajd-section">
+        <div class="ajd-section-title">Das Angebot</div>
+        <div class="ajd-body">${ajd.offer || ''}</div>
+      </div>`;
+
+    // Prefill mandate in tab 2
+    const mandateText = `Position: ${ajd.position || ''}\nSektor: ${d.sector || ''} | Standort: ${d.location || ''}\nJobtitel-Suche: ${(lc.job_titles || []).join(', ')}\nKeywords: ${(lc.keywords || []).join(', ')}\nAnforderungen:\n${(ajd.requirements || []).map(r => '• ' + r).join('\n')}`;
+    document.getElementById('screenMandate').value = mandateText;
+  }
+
+  // ── DOWNLOAD AJD ──
+  async function downloadAjd() {
+    if (!currentJdData) { alert('Bitte zuerst analysieren.'); return; }
+    const btn = document.getElementById('btnDownloadAjd');
+    const status = document.getElementById('ajdDownloadStatus');
+    btn.disabled = true;
+    btn.textContent = '⏳ Generiere DOCX...';
+    status.textContent = '';
+
+    try {
+      const res = await fetch('/api/generate-ajd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ajdData: currentJdData })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Fehler beim Generieren');
+
+      const bytes = Uint8Array.from(atob(json.docx), c => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = json.filename; a.click();
+      URL.revokeObjectURL(url);
+
+      status.textContent = `✓ ${json.filename} heruntergeladen`;
+      status.className = 'status-msg success';
+    } catch (err) {
+      status.textContent = 'Fehler: ' + err.message;
+      status.className = 'status-msg error';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⬇ Als DOCX herunterladen';
+    }
+  }
+
+  // ── KANDIDATEN ──
+  function addCandidate() {
+    candidateCount++;
+    const id = candidateCount;
+    candidates[id] = { name: '', text: '', fileBase64: null, mediaType: null };
+
+    const el = document.createElement('div');
+    el.className = 'candidate-input';
+    el.id = `cand-${id}`;
+    el.innerHTML = `
+      <div class="candidate-header">
+        <div class="candidate-num">${id}</div>
+        <input type="text" placeholder="Name (optional)" style="flex:1;" oninput="candidates[${id}].name=this.value">
+        <button class="candidate-remove" onclick="removeCandidate(${id})">×</button>
+      </div>
+      <div class="field">
+        <div class="upload-zone" style="padding:16px;" onclick="document.getElementById('cfile-${id}').click()">
+          <input type="file" id="cfile-${id}" accept=".pdf" onchange="handleCandidateFile(${id}, this.files[0])">
+          <div class="upload-text">📄 <strong>LinkedIn PDF hochladen</strong> — oder Text unten einfügen</div>
+          <div id="cbadge-${id}"></div>
+        </div>
+      </div>
+      <div class="field">
+        <textarea rows="4" placeholder="Alternativ: LinkedIn-Profil-Text hier einfügen (Ctrl+A im Profil, dann Ctrl+C, dann hier Ctrl+V)" oninput="candidates[${id}].text=this.value"></textarea>
+      </div>`;
+    document.getElementById('candidateList').appendChild(el);
+  }
+
+  function removeCandidate(id) {
+    document.getElementById(`cand-${id}`).remove();
+    delete candidates[id];
+  }
+
+  function handleCandidateFile(id, file) {
+    if (!file) return;
+    document.getElementById(`cbadge-${id}`).innerHTML = `<div class="file-badge" style="margin-top:6px;">📎 ${file.name}</div>`;
+    const reader = new FileReader();
+    reader.onload = e => {
+      candidates[id].fileBase64 = e.target.result.split(',')[1];
+      candidates[id].mediaType = 'application/pdf';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── SCREEN CANDIDATES ──
+  async function screenCandidates() {
+    const mandate = document.getElementById('screenMandate').value.trim();
+    if (!mandate) { alert('Bitte Suchprofil eingeben.'); return; }
+
+    const activeIds = Object.keys(candidates).filter(id => document.getElementById(`cand-${id}`));
+    if (activeIds.length === 0) { alert('Bitte mindestens einen Kandidaten hinzufügen.'); return; }
+
+    const candidatePayload = activeIds.map(id => ({
+      name: candidates[id].name || `Kandidat ${id}`,
+      text: candidates[id].text,
+      fileBase64: candidates[id].fileBase64,
+      mediaType: candidates[id].mediaType
+    }));
+
+    const btn = document.getElementById('btnScreen');
+    const status = document.getElementById('screenStatus');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Analysiere...';
+    status.textContent = '';
+
+    try {
+      const res = await fetch('/api/scout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'screen', mandate, candidates: candidatePayload })
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Fehler');
+
+      renderScreenResults(json.data);
+      status.textContent = `✓ ${json.data.candidates.length} Kandidaten gescreent`;
+      status.className = 'status-msg success';
+    } catch (err) {
+      status.textContent = 'Fehler: ' + err.message;
+      status.className = 'status-msg error';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '⚡ Kandidaten screenen';
+    }
+  }
+
+  function renderScreenResults(data) {
+    const el = document.getElementById('screenResults');
+    const sorted = [...(data.candidates || [])].sort((a, b) => (b.fit_score || 0) - (a.fit_score || 0));
+
+    let html = '';
+    if (data.ranking_summary) {
+      html += `<div class="card" style="border-left:4px solid var(--orange);">
+        <div class="card-title">Gesamtfazit</div>
+        <p style="font-size:14px;">${data.ranking_summary}</p>
+      </div>`;
+    }
+
+    sorted.forEach(c => {
+      const score = c.fit_score || 0;
+      const badgeClass = score >= 75 ? 'fit-high' : score >= 50 ? 'fit-med' : 'fit-low';
+      html += `<div class="screen-card">
+        <div class="screen-card-header">
+          <div class="candidate-num" style="width:32px;height:32px;font-size:14px;">${score}</div>
+          <strong style="font-size:15px;color:var(--navy);">${c.name}</strong>
+          <span class="fit-badge ${badgeClass}">${c.fit_label || ''}</span>
+        </div>
+        <div class="screen-card-body">
+          <div class="screen-grid">
+            <div>
+              <div class="result-label">✓ Stärken</div>
+              <ul class="ajd-list">${(c.strengths || []).map(s => `<li>${s}</li>`).join('')}</ul>
+            </div>
+            <div>
+              <div class="result-label">⚠ Lücken</div>
+              <ul class="ajd-list">${(c.gaps || []).map(g => `<li>${g}</li>`).join('')}</ul>
+            </div>
+          </div>
+          <div class="result-label">Empfehlung</div>
+          <p style="font-size:13px;margin-bottom:12px;">${c.recommendation || ''}</p>
+          <div class="result-label">InMail-Vorschlag (DE)</div>
+          <div class="inmail-box">${c.inmail_de || ''}</div>
+          <button class="copy-btn" onclick="copyText(this, ${JSON.stringify(c.inmail_de || '')})">📋 Kopieren</button>
+        </div>
+      </div>`;
+    });
+
+    el.innerHTML = html;
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Kopiert!';
+      setTimeout(() => btn.textContent = '📋 Kopieren', 2000);
+    });
+  }
+
+  // Init with one candidate slot
+  addCandidate();
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Brief drucken – Orxestra</title>
+<style>
+  @media print {
+    body { margin: 0; }
+    .no-print { display: none !important; }
+    @page { margin: 0; }
+  }
+  body {
+    font-family: Calibri, 'Segoe UI', sans-serif;
+    font-size: 11pt;
+    color: #1A1A2E;
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 20mm 20mm 35mm 25mm;
+    box-sizing: border-box;
+    position: relative;
+    background: white;
+  }
+  .header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16mm;
+  }
+  .logo-text {
+    font-size: 20pt;
+    font-weight: 700;
+    color: #102E66;
+    letter-spacing: 1px;
+  }
+  .logo-sub {
+    font-size: 8pt;
+    color: #6B7280;
+    margin-top: 2px;
+    text-align: right;
+  }
+  .recipient-block {
+    margin-bottom: 10mm;
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+  .date-line {
+    text-align: right;
+    margin-bottom: 10mm;
+    font-size: 10pt;
+    color: #6B7280;
+  }
+  .letter-body {
+    font-size: 11pt;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    text-align: justify;
+  }
+  .footer {
+    position: fixed;
+    bottom: 12mm;
+    left: 25mm;
+    right: 20mm;
+    font-size: 8pt;
+    color: #9CA3AF;
+    border-top: 0.5px solid #E5E7EB;
+    padding-top: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .print-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #FF6A42;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 999;
+    font-family: Calibri, sans-serif;
+  }
+  .print-btn:hover { background: #e55a35; }
+</style>
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">🖨 Drucken</button>
+
+<div class="page">
+  <div class="header">
+    <div>
+      <div class="logo-text">SIGNIUM</div>
+      <div class="logo-sub">Stein & Partner GmbH · Wien</div>
+    </div>
+  </div>
+
+  <div class="recipient-block" id="recipient-block"></div>
+  <div class="date-line" id="date-line"></div>
+  <div class="letter-body" id="letter-body"></div>
+
+  <div class="footer">
+    <span>Signium – Stein & Partner GmbH · Rathausstraße 21 · A-1010 Wien · t +43 1 225 635 452</span>
+    <span>vienna@signium.com · signium.com</span>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const text = params.get('text') || '';
+  const recipient = params.get('recipient') || '';
+
+  const today = new Date().toLocaleDateString('de-AT', {year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('date-line').textContent = 'Wien, ' + today;
+
+  if (recipient) {
+    document.getElementById('recipient-block').textContent = recipient;
+  }
+
+  const cleaned = text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .trim();
+  document.getElementById('letter-body').textContent = cleaned;
+</script>
+</body>
+</html>
