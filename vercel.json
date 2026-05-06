@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    { "source": "/xcheck", "destination": "/xcheck.html" },
+    { "source": "/scout", "destination": "/scout.html" },
+    { "source": "/pulse", "destination": "/pulse.html" },
+    { "source": "/docs", "destination": "/docs.html" },
+    { "source": "/angebot", "destination": "/angebot.html" }
+  ],
+  "crons": [
+    { "path": "/api/scan", "schedule": "0 7 * * *" }
+  ],
+  "functions": {
+    "api/*.js": {
+      "includeFiles": "template.docx"
+    }
+  }
+}
