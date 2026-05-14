@@ -232,7 +232,7 @@ Branchen: Elektronik/Messtechnik, Consumer Durables Premium, Industrieautomation
   for (const co of allCompanies) {
     if (!co.name) continue;
     try {
-      const saved = await sbInsert('target_companies', { ...co, mandate_id: mandate.id });
+      const { circle: _c, ...coData } = co; const saved = await sbInsert('target_companies', { ...coData, mandate_id: mandate.id }); saved._circle = _c || co.priority;
       savedCompanies.push(saved);
     } catch (e) {
       await appendLog(runId, `Speicher-Fehler: ${co.name}`);
@@ -333,11 +333,8 @@ Antworte NUR mit JSON (kein Text davor/danach):
   ],
   "education": "Ausbildung falls bekannt",
   "languages": "Bekannte Sprachen",
-  "board_mandates": "Beirats-/Aufsichtsratsmandate falls bekannt, sonst leer",
-  "public_visibility": "Konferenzen, Interviews, Publikationen falls bekannt",
   "fit_score": 0,
   "fit_reasoning": "Konkrete Begründung auf die Kernanforderungen eingehen — was passt, was fehlt",
-  "gaps": "Was unklar oder fehlend ist",
   "tenure_years": 0,
   "change_indicators": ["Signal 1", "Signal 2"],
   "status": "shortlist"
