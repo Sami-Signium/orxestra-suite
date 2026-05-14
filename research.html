@@ -7,17 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --white:  #FFFFFF;
-  --beige1: #F7F4EF;
-  --beige2: #EDE8DF;
-  --black:  #1A1A1A;
-  --gray:   #6B6560;
-  --lgray:  #B8B0A8;
-  --red:    #C0392B;
-  --border: rgba(26,26,26,0.08);
-  --border-strong: rgba(26,26,26,0.16);
-}
+:root{--white:#FFFFFF;--beige1:#F7F4EF;--beige2:#EDE8DF;--black:#1A1A1A;--gray:#6B6560;--lgray:#B8B0A8;--red:#C0392B;--border:rgba(26,26,26,0.08);--bs:rgba(26,26,26,0.16);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Montserrat',sans-serif;background:var(--beige1);color:var(--black);min-height:100vh;}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(247,244,239,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
@@ -27,31 +17,31 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .nav-right{display:flex;align-items:center;gap:32px;}
 .nav-link{font-size:10px;font-weight:300;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;color:var(--gray);transition:color 0.2s;}
 .nav-link:hover{color:var(--red);}
-.main{max-width:1000px;margin:0 auto;padding:100px 48px 80px;}
+.main{max-width:1100px;margin:0 auto;padding:100px 48px 80px;}
 .page-title{margin-bottom:48px;}
 .page-label{font-size:10px;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
-.page-h1{font-size:32px;font-weight:200;letter-spacing:0.06em;color:var(--black);line-height:1.2;}
-.page-sub{font-size:13px;font-weight:300;color:var(--gray);margin-top:10px;line-height:1.7;letter-spacing:0.02em;}
+.page-h1{font-size:32px;font-weight:200;letter-spacing:0.06em;line-height:1.2;}
+.page-sub{font-size:13px;font-weight:300;color:var(--gray);margin-top:10px;line-height:1.7;}
 .section{margin-bottom:40px;}
-.section-title{font-size:10px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:var(--black);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.sec-title{font-size:10px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .form-full{grid-column:1/-1;}
 .field label{display:block;font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--lgray);margin-bottom:6px;}
-.field input,.field textarea{width:100%;background:var(--white);border:1px solid var(--border-strong);border-radius:2px;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:300;color:var(--black);transition:border-color 0.2s;}
+.field input,.field textarea{width:100%;background:var(--white);border:1px solid var(--bs);border-radius:2px;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:300;color:var(--black);transition:border-color 0.2s;}
 .field input:focus,.field textarea:focus{outline:none;border-color:var(--red);}
 .field textarea{resize:vertical;min-height:90px;line-height:1.6;}
-.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--white);border:1px solid var(--border-strong);border-radius:2px;padding:8px 12px;min-height:42px;cursor:text;}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--white);border:1px solid var(--bs);border-radius:2px;padding:8px 12px;min-height:42px;cursor:text;}
 .tags-wrap:focus-within{border-color:var(--red);}
-.tag{display:flex;align-items:center;gap:5px;background:var(--beige2);border-radius:1px;padding:3px 10px;font-size:11px;font-weight:300;color:var(--black);letter-spacing:0.04em;}
+.tag{display:flex;align-items:center;gap:5px;background:var(--beige2);border-radius:1px;padding:3px 10px;font-size:11px;font-weight:300;}
 .tag button{background:none;border:none;cursor:pointer;color:var(--lgray);font-size:13px;line-height:1;padding:0;}
 .tag button:hover{color:var(--red);}
-.tag-input{border:none;outline:none;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;min-width:100px;flex:1;background:transparent;color:var(--black);}
+.tag-input{border:none;outline:none;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;min-width:100px;flex:1;background:transparent;}
 .btn-start{display:inline-flex;align-items:center;gap:10px;background:var(--black);color:var(--white);border:none;border-radius:2px;padding:14px 36px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;transition:background 0.2s;}
 .btn-start:hover{background:var(--red);}
 .btn-start:disabled{opacity:0.4;cursor:not-allowed;}
 .progress-wrap{display:none;}
 .progress-wrap.active{display:block;}
-.phases{display:flex;gap:0;margin-bottom:32px;}
+.phases{display:flex;margin-bottom:32px;}
 .phase{flex:1;text-align:center;padding:14px 8px;font-size:9px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--lgray);border-bottom:2px solid var(--border);transition:all 0.3s;}
 .phase.active{color:var(--red);border-color:var(--red);font-weight:500;}
 .phase.done{color:var(--black);border-color:var(--black);}
@@ -60,32 +50,80 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .log-ts{color:#555;flex-shrink:0;}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:24px;border:1px solid var(--border);}
 .stat{background:var(--white);padding:20px 24px;text-align:center;}
-.stat-n{font-size:36px;font-weight:100;color:var(--black);letter-spacing:-0.02em;}
+.stat-n{font-size:36px;font-weight:100;letter-spacing:-0.02em;}
 .stat-l{font-size:9px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--lgray);margin-top:4px;}
 .results-wrap{display:none;}
 .results-wrap.active{display:block;}
-.results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
-.results-bar h2{font-size:13px;font-weight:300;letter-spacing:0.08em;color:var(--black);}
+.res-tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.res-tab{font-size:10px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;padding:10px 20px;border:none;background:none;cursor:pointer;color:var(--gray);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;}
+.res-tab.active{color:var(--black);border-color:var(--red);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* COMPANIES */
+.circle-section{margin-bottom:32px;}
+.circle-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.circle-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.c1{background:var(--black);color:var(--white);}
+.c2{background:var(--gray);color:var(--white);}
+.c3{background:var(--beige2);color:var(--black);}
+.circle-title{font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;}
+.circle-sub{font-size:11px;font-weight:300;color:var(--gray);margin-left:auto;}
+.company-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+.company-card{background:var(--white);border:1px solid var(--border);border-radius:2px;padding:14px 16px;transition:border-color 0.15s;}
+.company-card:hover{border-color:var(--bs);}
+.co-name{font-size:13px;font-weight:400;color:var(--black);}
+.co-meta{font-size:10px;font-weight:300;color:var(--lgray);margin-top:3px;letter-spacing:0.03em;}
+.co-why{font-size:11px;font-weight:300;color:var(--gray);margin-top:8px;line-height:1.5;}
+
+/* FILTER ROW */
+.filter-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.filter-bar h3{font-size:12px;font-weight:300;letter-spacing:0.06em;color:var(--black);}
 .filter-row{display:flex;gap:2px;}
-.filter-btn{font-size:9px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--border-strong);background:var(--white);cursor:pointer;color:var(--gray);transition:all 0.15s;}
+.filter-btn{font-size:9px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--bs);background:var(--white);cursor:pointer;color:var(--gray);transition:all 0.15s;}
 .filter-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
+
+/* CANDIDATES */
 .cand-list{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);}
-.cand-item{background:var(--white);padding:20px 24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;transition:background 0.15s;}
-.cand-item:hover{background:var(--beige1);}
-.cand-item.shortlist{border-left:3px solid var(--red);}
-.cand-name{font-size:14px;font-weight:400;letter-spacing:0.04em;color:var(--black);}
-.cand-role{font-size:11px;font-weight:300;color:var(--gray);margin-top:2px;letter-spacing:0.03em;}
-.cand-company{font-size:11px;font-weight:400;color:var(--red);margin-top:1px;}
-.cand-reasoning{font-size:11px;font-weight:300;color:var(--gray);margin-top:10px;line-height:1.6;}
-.cand-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
-.cand-tag{font-size:9px;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border:1px solid var(--border-strong);color:var(--gray);}
-.cand-tag.sl{border-color:var(--red);color:var(--red);}
-.score-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.score-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:300;}
-.sh{border:2px solid var(--black);color:var(--black);}
-.sm{border:2px solid var(--gray);color:var(--gray);}
-.sl{border:2px solid var(--lgray);color:var(--lgray);}
+.cand-card{background:var(--white);padding:24px;transition:background 0.15s;}
+.cand-card:hover{background:var(--beige1);}
+.cand-card.shortlist{border-left:3px solid var(--red);}
+.cand-card.longlist{border-left:3px solid var(--lgray);}
+.cand-top{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+.cand-name{font-size:15px;font-weight:400;letter-spacing:0.03em;}
+.cand-role{font-size:12px;font-weight:300;color:var(--gray);margin-top:2px;}
+.cand-company{font-size:12px;font-weight:400;color:var(--red);margin-top:1px;}
+.score-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.score-circle{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:300;}
+.s-hi{border:2px solid var(--black);color:var(--black);}
+.s-mi{border:2px solid var(--gray);color:var(--gray);}
+.s-lo{border:2px solid var(--lgray);color:var(--lgray);}
 .score-lbl{font-size:8px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--lgray);}
+.cand-body{margin-top:14px;}
+.cand-summary{font-size:12px;font-weight:300;color:var(--black);line-height:1.7;margin-bottom:14px;}
+.cand-reasoning{font-size:12px;font-weight:300;color:var(--gray);line-height:1.6;padding:12px 14px;background:var(--beige1);border-left:2px solid var(--border);margin-bottom:14px;}
+
+/* CAREER TIMELINE */
+.career-title{font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--lgray);margin-bottom:10px;}
+.career-timeline{display:grid;gap:0;}
+.career-station{display:grid;grid-template-columns:80px 1fr;gap:0;position:relative;}
+.career-station::before{content:'';position:absolute;left:72px;top:6px;bottom:-6px;width:1px;background:var(--border);}
+.career-station:last-child::before{display:none;}
+.cs-years{font-size:10px;font-weight:300;color:var(--lgray);padding:4px 12px 16px 0;text-align:right;letter-spacing:0.03em;white-space:nowrap;}
+.cs-content{padding:0 0 16px 16px;position:relative;}
+.cs-content::before{content:'';position:absolute;left:-4px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--beige2);border:1px solid var(--lgray);}
+.cs-title{font-size:12px;font-weight:400;color:var(--black);}
+.cs-company{font-size:11px;font-weight:300;color:var(--gray);}
+.cs-size{font-size:10px;font-weight:300;color:var(--lgray);}
+.cs-highlights{font-size:11px;font-weight:300;color:var(--gray);margin-top:4px;line-height:1.5;}
+
+.cand-extra{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;}
+.extra-item{font-size:11px;font-weight:300;color:var(--gray);line-height:1.5;}
+.extra-label{font-size:9px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--lgray);margin-bottom:3px;}
+.cand-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;}
+.ctag{font-size:9px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border:1px solid var(--bs);color:var(--gray);}
+.ctag.sl{border-color:var(--red);color:var(--red);}
+.ctag.gap{border-color:var(--lgray);color:var(--lgray);}
 .empty{text-align:center;padding:60px;color:var(--lgray);font-size:12px;font-weight:300;letter-spacing:0.08em;}
 </style>
 </head>
@@ -94,7 +132,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 <nav>
   <div style="display:flex;align-items:center;gap:20px">
     <a href="/index.html" class="nav-logo">or<span class="x">x</span>estra</a>
-    <span style="color:var(--border-strong);font-size:18px;font-weight:100">|</span>
+    <span style="color:rgba(26,26,26,0.16);font-size:18px;font-weight:100">|</span>
     <span class="nav-module">x-research</span>
   </div>
   <div class="nav-right">
@@ -109,12 +147,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
   <div class="page-title">
     <div class="page-label">Executive Search</div>
     <h1 class="page-h1">Research Agent</h1>
-    <p class="page-sub">Mandatsprofil eingeben — der Agent identifiziert Zielunternehmen,<br>recherchiert Führungskräfte und erstellt eine bewertete Shortlist.</p>
+    <p class="page-sub">Mandatsprofil eingeben — der Agent identifiziert 50+ Zielunternehmen in 3 Kreisen, recherchiert Führungskräfte und erstellt eine bewertete Shortlist mit vollständigen Profilen.</p>
   </div>
 
+  <!-- FORM -->
   <div id="formWrap">
     <div class="section">
-      <div class="section-title">Das Mandat</div>
+      <div class="sec-title">Das Mandat</div>
       <div class="form-grid">
         <div class="field"><label>Position</label><input type="text" id="f_title" value="VP Sales & Marketing"></div>
         <div class="field"><label>Klient</label><input type="text" id="f_client" value="W&H Dentalwerk Bürmoos GmbH"></div>
@@ -125,28 +164,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
         </div>
       </div>
     </div>
-
     <div class="section">
-      <div class="section-title">Suchparameter</div>
+      <div class="sec-title">Suchparameter</div>
       <div class="form-grid">
-        <div class="field form-full"><label>Kernanforderungen — Enter zum Hinzufügen</label>
-          <div class="tags-wrap" id="req_w" onclick="document.getElementById('req_i').focus()"><input class="tag-input" id="req_i" placeholder="Anforderung..." onkeydown="addTag(event,'req')"></div>
+        <div class="field form-full"><label>Kernanforderungen</label>
+          <div class="tags-wrap" id="req_w" onclick="document.getElementById('req_i').focus()"><input class="tag-input" id="req_i" placeholder="Anforderung + Enter" onkeydown="addTag(event,'req')"></div>
         </div>
         <div class="field form-full"><label>Zielbranchen</label>
-          <div class="tags-wrap" id="ind_w" onclick="document.getElementById('ind_i').focus()"><input class="tag-input" id="ind_i" placeholder="Branche..." onkeydown="addTag(event,'ind')"></div>
+          <div class="tags-wrap" id="ind_w" onclick="document.getElementById('ind_i').focus()"><input class="tag-input" id="ind_i" placeholder="Branche + Enter" onkeydown="addTag(event,'ind')"></div>
         </div>
         <div class="field"><label>Geographie</label>
-          <div class="tags-wrap" id="geo_w" onclick="document.getElementById('geo_i').focus()"><input class="tag-input" id="geo_i" placeholder="Land..." onkeydown="addTag(event,'geo')"></div>
+          <div class="tags-wrap" id="geo_w" onclick="document.getElementById('geo_i').focus()"><input class="tag-input" id="geo_i" placeholder="Land + Enter" onkeydown="addTag(event,'geo')"></div>
         </div>
         <div class="field"><label>Zielfunktionen</label>
-          <div class="tags-wrap" id="func_w" onclick="document.getElementById('func_i').focus()"><input class="tag-input" id="func_i" placeholder="Funktion..." onkeydown="addTag(event,'func')"></div>
+          <div class="tags-wrap" id="func_w" onclick="document.getElementById('func_i').focus()"><input class="tag-input" id="func_i" placeholder="Funktion + Enter" onkeydown="addTag(event,'func')"></div>
         </div>
       </div>
     </div>
-
     <button class="btn-start" onclick="startResearch()">Research starten →</button>
   </div>
 
+  <!-- PROGRESS -->
   <div class="progress-wrap" id="progressWrap">
     <div class="phases">
       <div class="phase" id="ph1">01 — Markt</div>
@@ -163,17 +201,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
     </div>
   </div>
 
+  <!-- RESULTS -->
   <div class="results-wrap" id="resultsWrap">
-    <div class="results-bar">
-      <h2 id="resTitle">Ergebnisse</h2>
-      <div class="filter-row">
-        <button class="filter-btn active" onclick="filterC('all',this)">Alle</button>
-        <button class="filter-btn" onclick="filterC('shortlist',this)">Shortlist</button>
-        <button class="filter-btn" onclick="filterC('longlist',this)">Longlist</button>
-      </div>
+    <div class="res-tabs">
+      <button class="res-tab active" onclick="switchTab('candidates',this)">Kandidaten</button>
+      <button class="res-tab" onclick="switchTab('companies',this)">Zielunternehmen</button>
     </div>
-    <div class="cand-list" id="candList"></div>
+
+    <!-- CANDIDATES TAB -->
+    <div class="tab-content active" id="tab-candidates">
+      <div class="filter-bar">
+        <h3 id="resTitle">Ergebnisse</h3>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterC('all',this)">Alle</button>
+          <button class="filter-btn" onclick="filterC('shortlist',this)">Shortlist</button>
+          <button class="filter-btn" onclick="filterC('longlist',this)">Longlist</button>
+        </div>
+      </div>
+      <div class="cand-list" id="candList"></div>
+    </div>
+
+    <!-- COMPANIES TAB -->
+    <div class="tab-content" id="tab-companies">
+      <div id="companiesView"></div>
+    </div>
   </div>
+
 </div>
 
 <script>
@@ -181,14 +234,22 @@ const API=window.location.origin+'/api/research';
 const SB='https://hwoyepbdxbkidbdccldv.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3b3llcGJkeGJraWRiZGNjbGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NjM3MTcsImV4cCI6MjA5NDMzOTcxN30.MkoCBfVKc8xgP2B_iQqrra55BjJ3-vaBcUDllku0FLg';
 const tags={req:[],ind:[],geo:[],func:[]};
-let timer=null,mid=null,allC=[];
+let timer=null,mid=null,allC=[],allCo=[];
+
 window.onload=()=>{
-  const d={req:['Internationale Vertriebsführung','Multi-Channel Vertrieb','Medizintechnik oder verwandte Branche','Multi-Brand Erfahrung','Deutsch + Englisch verhandlungssicher'],ind:['Medizintechnik','Dental','Elektronik','Consumer Durables'],geo:['Deutschland','Österreich','Schweiz'],func:['VP Sales','Director Sales','Head of Sales','CSO','CCO']};
+  const d={
+    req:['Internationale Vertriebsführung','Multi-Channel Vertrieb','Medizintechnik oder verwandte Branche','Multi-Brand Erfahrung','Deutsch + Englisch verhandlungssicher'],
+    ind:['Medizintechnik','Dental','Elektronik','Consumer Durables'],
+    geo:['Deutschland','Österreich','Schweiz'],
+    func:['VP Sales','Director Sales','Head of Sales','CSO','CCO']
+  };
   for(const[k,v]of Object.entries(d)){tags[k]=v;renderTags(k);}
 };
+
 function addTag(e,t){if(e.key!=='Enter')return;const v=e.target.value.trim();if(v&&!tags[t].includes(v)){tags[t].push(v);renderTags(t);}e.target.value='';e.preventDefault();}
 function removeTag(t,v){tags[t]=tags[t].filter(x=>x!==v);renderTags(t);}
 function renderTags(t){const w=document.getElementById(t+'_w'),i=document.getElementById(t+'_i');w.querySelectorAll('.tag').forEach(x=>x.remove());tags[t].forEach(v=>{const el=document.createElement('div');el.className='tag';el.innerHTML=`${v}<button onclick="removeTag('${t}','${v}')" type="button">×</button>`;w.insertBefore(el,i);});}
+
 async function startResearch(){
   const title=document.getElementById('f_title').value.trim();
   if(!title){alert('Bitte Position eingeben');return;}
@@ -200,14 +261,18 @@ async function startResearch(){
   document.getElementById('progressWrap').classList.add('active');
   timer=setInterval(poll,3000);
 }
+
 const phMap={phase1_market_mapping:'ph1',phase2_org_mapping:'ph2',phase3_candidate_id:'ph3',phase4_deep_research:'ph4',phase5_shortlist:'ph5',completed:'ph5'};
+
 async function poll(){
   const r=await fetch(`${API}?action=status&mandate_id=${mid}`);
   const d=await r.json();
   if(d.run)updateProg(d.run);
-  if(d.candidates?.length){allC=d.candidates;}
-  if(d.run?.status==='completed'||d.run?.status==='error'){clearInterval(timer);showRes(d.candidates||[]);}
+  if(d.candidates?.length)allC=d.candidates;
+  if(d.companies?.length)allCo=d.companies;
+  if(d.run?.status==='completed'||d.run?.status==='error'){clearInterval(timer);showRes(d.candidates||[],d.companies||[]);}
 }
+
 function updateProg(run){
   const ps=['ph1','ph2','ph3','ph4','ph5'],idx=ps.indexOf(phMap[run.phase]||'ph1');
   ps.forEach((p,i)=>{document.getElementById(p).className='phase'+(i<idx?' done':i===idx?' active':'');});
@@ -218,15 +283,114 @@ function updateProg(run){
   document.getElementById('sK').textContent=run.candidates_found||'—';
   document.getElementById('sS').textContent=run.shortlist_count||'—';
 }
-function showRes(cands){document.getElementById('progressWrap').style.display='none';document.getElementById('resultsWrap').classList.add('active');allC=cands;renderC(cands);}
-function filterC(f,el){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderC(f==='all'?allC:allC.filter(c=>c.status===f));}
+
+function switchTab(tab,el){
+  document.querySelectorAll('.res-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function showRes(cands,cos){
+  document.getElementById('progressWrap').style.display='none';
+  document.getElementById('resultsWrap').classList.add('active');
+  allC=cands;allCo=cos;
+  renderC(cands);renderCompanies(cos);
+}
+
+function filterC(f,el){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderC(f==='all'?allC:allC.filter(c=>c.status===f));
+}
+
 function renderC(cands){
   const list=document.getElementById('candList');
-  if(!cands.length){list.innerHTML='<div class="empty">Keine Kandidaten gefunden</div>';return;}
+  if(!cands.length){list.innerHTML='<div class="empty">Keine Kandidaten in dieser Kategorie</div>';return;}
   const s=[...cands].sort((a,b)=>b.fit_score-a.fit_score);
-  document.getElementById('resTitle').textContent=`${s.length} Kandidaten — ${s.filter(c=>c.status==='shortlist').length} Shortlist`;
-  list.innerHTML=s.map(c=>{const sc=c.fit_score>=80?'sh':c.fit_score>=65?'sm':'sl';const inds=(c.change_indicators||[]).slice(0,3);
-  return`<div class="cand-item ${c.status}"><div><div class="cand-name">${c.first_name||''} ${c.last_name||''}</div><div class="cand-role">${c.current_title||''}</div><div class="cand-company">${c.current_company||''} ${c.current_country?'· '+c.current_country:''}</div><div class="cand-reasoning">${c.fit_reasoning||c.career_summary||''}</div><div class="cand-tags">${c.status==='shortlist'?'<span class="cand-tag sl">Shortlist</span>':''}${inds.map(i=>`<span class="cand-tag">${i}</span>`).join('')}</div></div><div class="score-col"><div class="score-circle ${sc}">${c.fit_score}</div><div class="score-lbl">Fit</div></div></div>`;}).join('');
+  document.getElementById('resTitle').textContent=`${s.length} Kandidaten — ${s.filter(c=>c.status==='shortlist').length} Shortlist · ${s.filter(c=>c.status==='longlist').length} Longlist`;
+
+  list.innerHTML=s.map(c=>{
+    const sc=c.fit_score>=75?'s-hi':c.fit_score>=55?'s-mi':'s-lo';
+    const stations=Array.isArray(c.career_stations)?c.career_stations:[];
+    const inds=(c.change_indicators||[]).slice(0,3);
+    const stationsHtml=stations.length?`
+      <div style="margin-top:14px">
+        <div class="career-title">Karrierestationen</div>
+        <div class="career-timeline">
+          ${stations.map(st=>`
+            <div class="career-station">
+              <div class="cs-years">${st.years||''}</div>
+              <div class="cs-content">
+                <div class="cs-title">${st.title||''}</div>
+                <div class="cs-company">${st.company||''}</div>
+                ${st.company_size?`<div class="cs-size">${st.company_size}</div>`:''}
+                ${st.highlights?`<div class="cs-highlights">${st.highlights}</div>`:''}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`:'';
+
+    const extraHtml=`
+      <div class="cand-extra">
+        ${c.education?`<div class="extra-item"><div class="extra-label">Ausbildung</div>${c.education}</div>`:''}
+        ${c.languages?`<div class="extra-item"><div class="extra-label">Sprachen</div>${c.languages}</div>`:''}
+        ${c.board_mandates?`<div class="extra-item"><div class="extra-label">Mandate</div>${c.board_mandates}</div>`:''}
+        ${c.public_visibility?`<div class="extra-item"><div class="extra-label">Sichtbarkeit</div>${c.public_visibility}</div>`:''}
+      </div>`;
+
+    return`<div class="cand-card ${c.status}">
+      <div class="cand-top">
+        <div>
+          <div class="cand-name">${c.first_name||''} ${c.last_name||''}</div>
+          <div class="cand-role">${c.current_title||''}</div>
+          <div class="cand-company">${c.current_company||''} ${c.current_country?'· '+c.current_country:''}</div>
+        </div>
+        <div class="score-wrap">
+          <div class="score-circle ${sc}">${c.fit_score}</div>
+          <div class="score-lbl">Fit</div>
+        </div>
+      </div>
+      <div class="cand-body">
+        ${c.career_summary?`<div class="cand-summary">${c.career_summary}</div>`:''}
+        ${c.fit_reasoning?`<div class="cand-reasoning">${c.fit_reasoning}</div>`:''}
+        ${stationsHtml}
+        ${extraHtml}
+        <div class="cand-tags">
+          ${c.status==='shortlist'?'<span class="ctag sl">Shortlist</span>':'<span class="ctag">Longlist</span>'}
+          ${inds.map(i=>`<span class="ctag">${i}</span>`).join('')}
+          ${c.gaps?`<span class="ctag gap">⚠ ${c.gaps}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCompanies(cos){
+  const view=document.getElementById('companiesView');
+  if(!cos.length){view.innerHTML='<div class="empty">Keine Zielunternehmen</div>';return;}
+  const circleInfo={1:{label:'Kreis 1 — Direkte Wettbewerber',sub:'Gleiche Branche, direkter Kandidatenpool',cls:'c1'},2:{label:'Kreis 2 — Adjacent',sub:'Ähnliche Strukturen, verwandte Märkte',cls:'c2'},3:{label:'Kreis 3 — Transfer-Kandidaten',sub:'Weiter entfernt aber relevante Kompetenzen',cls:'c3'}};
+  let html='';
+  for(const circle of[1,2,3]){
+    const items=cos.filter(c=>(c.circle||c.priority)===circle);
+    if(!items.length)continue;
+    const info=circleInfo[circle];
+    html+=`<div class="circle-section">
+      <div class="circle-header">
+        <div class="circle-badge ${info.cls}">${circle}</div>
+        <div><div class="circle-title">${info.label}</div></div>
+        <div class="circle-sub">${items.length} Unternehmen</div>
+      </div>
+      <div class="company-grid">
+        ${items.map(co=>`<div class="company-card">
+          <div class="co-name">${co.name}</div>
+          <div class="co-meta">${[co.industry,co.country,co.size_employees].filter(Boolean).join(' · ')}</div>
+          ${co.why_relevant?`<div class="co-why">${co.why_relevant}</div>`:''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  view.innerHTML=html;
 }
 </script>
 </body>
