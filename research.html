@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>x-RESEARCH — Orxestra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --white:  #FFFFFF;
+  --beige1: #F7F4EF;
+  --beige2: #EDE8DF;
+  --black:  #1A1A1A;
+  --gray:   #6B6560;
+  --lgray:  #B8B0A8;
+  --red:    #C0392B;
+  --border: rgba(26,26,26,0.08);
+  --border-strong: rgba(26,26,26,0.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:var(--beige1);color:var(--black);min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(247,244,239,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.nav-logo{font-size:16px;font-weight:200;letter-spacing:0.2em;text-decoration:none;color:var(--black);}
+.nav-logo .x{color:var(--red);}
+.nav-module{font-size:10px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:var(--gray);}
+.nav-right{display:flex;align-items:center;gap:32px;}
+.nav-link{font-size:10px;font-weight:300;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;color:var(--gray);transition:color 0.2s;}
+.nav-link:hover{color:var(--red);}
+.main{max-width:1000px;margin:0 auto;padding:100px 48px 80px;}
+.page-title{margin-bottom:48px;}
+.page-label{font-size:10px;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;color:var(--red);margin-bottom:10px;}
+.page-h1{font-size:32px;font-weight:200;letter-spacing:0.06em;color:var(--black);line-height:1.2;}
+.page-sub{font-size:13px;font-weight:300;color:var(--gray);margin-top:10px;line-height:1.7;letter-spacing:0.02em;}
+.section{margin-bottom:40px;}
+.section-title{font-size:10px;font-weight:500;letter-spacing:0.25em;text-transform:uppercase;color:var(--black);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-full{grid-column:1/-1;}
+.field label{display:block;font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--lgray);margin-bottom:6px;}
+.field input,.field textarea{width:100%;background:var(--white);border:1px solid var(--border-strong);border-radius:2px;padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:300;color:var(--black);transition:border-color 0.2s;}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--red);}
+.field textarea{resize:vertical;min-height:90px;line-height:1.6;}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--white);border:1px solid var(--border-strong);border-radius:2px;padding:8px 12px;min-height:42px;cursor:text;}
+.tags-wrap:focus-within{border-color:var(--red);}
+.tag{display:flex;align-items:center;gap:5px;background:var(--beige2);border-radius:1px;padding:3px 10px;font-size:11px;font-weight:300;color:var(--black);letter-spacing:0.04em;}
+.tag button{background:none;border:none;cursor:pointer;color:var(--lgray);font-size:13px;line-height:1;padding:0;}
+.tag button:hover{color:var(--red);}
+.tag-input{border:none;outline:none;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;min-width:100px;flex:1;background:transparent;color:var(--black);}
+.btn-start{display:inline-flex;align-items:center;gap:10px;background:var(--black);color:var(--white);border:none;border-radius:2px;padding:14px 36px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;transition:background 0.2s;}
+.btn-start:hover{background:var(--red);}
+.btn-start:disabled{opacity:0.4;cursor:not-allowed;}
+.progress-wrap{display:none;}
+.progress-wrap.active{display:block;}
+.phases{display:flex;gap:0;margin-bottom:32px;}
+.phase{flex:1;text-align:center;padding:14px 8px;font-size:9px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--lgray);border-bottom:2px solid var(--border);transition:all 0.3s;}
+.phase.active{color:var(--red);border-color:var(--red);font-weight:500;}
+.phase.done{color:var(--black);border-color:var(--black);}
+.log-terminal{background:#0f0f0f;border-radius:2px;padding:20px 24px;font-family:'Courier New',monospace;font-size:11px;color:#a8e6b8;line-height:1.8;max-height:180px;overflow-y:auto;}
+.log-line{display:flex;gap:12px;}
+.log-ts{color:#555;flex-shrink:0;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:24px;border:1px solid var(--border);}
+.stat{background:var(--white);padding:20px 24px;text-align:center;}
+.stat-n{font-size:36px;font-weight:100;color:var(--black);letter-spacing:-0.02em;}
+.stat-l{font-size:9px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--lgray);margin-top:4px;}
+.results-wrap{display:none;}
+.results-wrap.active{display:block;}
+.results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.results-bar h2{font-size:13px;font-weight:300;letter-spacing:0.08em;color:var(--black);}
+.filter-row{display:flex;gap:2px;}
+.filter-btn{font-size:9px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--border-strong);background:var(--white);cursor:pointer;color:var(--gray);transition:all 0.15s;}
+.filter-btn.active{background:var(--black);color:var(--white);border-color:var(--black);}
+.cand-list{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);}
+.cand-item{background:var(--white);padding:20px 24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;transition:background 0.15s;}
+.cand-item:hover{background:var(--beige1);}
+.cand-item.shortlist{border-left:3px solid var(--red);}
+.cand-name{font-size:14px;font-weight:400;letter-spacing:0.04em;color:var(--black);}
+.cand-role{font-size:11px;font-weight:300;color:var(--gray);margin-top:2px;letter-spacing:0.03em;}
+.cand-company{font-size:11px;font-weight:400;color:var(--red);margin-top:1px;}
+.cand-reasoning{font-size:11px;font-weight:300;color:var(--gray);margin-top:10px;line-height:1.6;}
+.cand-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.cand-tag{font-size:9px;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border:1px solid var(--border-strong);color:var(--gray);}
+.cand-tag.sl{border-color:var(--red);color:var(--red);}
+.score-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.score-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:300;}
+.sh{border:2px solid var(--black);color:var(--black);}
+.sm{border:2px solid var(--gray);color:var(--gray);}
+.sl{border:2px solid var(--lgray);color:var(--lgray);}
+.score-lbl{font-size:8px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;color:var(--lgray);}
+.empty{text-align:center;padding:60px;color:var(--lgray);font-size:12px;font-weight:300;letter-spacing:0.08em;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:20px">
+    <a href="/index.html" class="nav-logo">or<span class="x">x</span>estra</a>
+    <span style="color:var(--border-strong);font-size:18px;font-weight:100">|</span>
+    <span class="nav-module">x-research</span>
+  </div>
+  <div class="nav-right">
+    <a href="/xcheck.html" class="nav-link">x-check</a>
+    <a href="/pulse.html" class="nav-link">x-pulse</a>
+    <a href="/docs.html" class="nav-link">x-docs</a>
+  </div>
+</nav>
+
+<div class="main">
+
+  <div class="page-title">
+    <div class="page-label">Executive Search</div>
+    <h1 class="page-h1">Research Agent</h1>
+    <p class="page-sub">Mandatsprofil eingeben — der Agent identifiziert Zielunternehmen,<br>recherchiert Führungskräfte und erstellt eine bewertete Shortlist.</p>
+  </div>
+
+  <div id="formWrap">
+    <div class="section">
+      <div class="section-title">Das Mandat</div>
+      <div class="form-grid">
+        <div class="field"><label>Position</label><input type="text" id="f_title" value="VP Sales & Marketing"></div>
+        <div class="field"><label>Klient</label><input type="text" id="f_client" value="W&H Dentalwerk Bürmoos GmbH"></div>
+        <div class="field"><label>Branche des Klienten</label><input type="text" id="f_industry" value="Medizintechnik / Dental"></div>
+        <div class="field"><label>Standort</label><input type="text" id="f_location" value="Großraum Salzburg, Österreich"></div>
+        <div class="field form-full"><label>Positionsbeschreibung</label>
+          <textarea id="f_desc">VP Sales & Marketing als Mitglied der Geschäftsleitung. Verantwortlich für globale Vertriebsorganisation (~400 MA, 20 Vertriebstöchter, 110 Länder). Strategische Weiterentwicklung von Vertrieb und Marketing, Multi-Channel, OEM- und Multi-Brand-Strategien. Unternehmen mit ca. 200 Mio EUR Umsatz, 98% Exportquote, familiengeführt.</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Suchparameter</div>
+      <div class="form-grid">
+        <div class="field form-full"><label>Kernanforderungen — Enter zum Hinzufügen</label>
+          <div class="tags-wrap" id="req_w" onclick="document.getElementById('req_i').focus()"><input class="tag-input" id="req_i" placeholder="Anforderung..." onkeydown="addTag(event,'req')"></div>
+        </div>
+        <div class="field form-full"><label>Zielbranchen</label>
+          <div class="tags-wrap" id="ind_w" onclick="document.getElementById('ind_i').focus()"><input class="tag-input" id="ind_i" placeholder="Branche..." onkeydown="addTag(event,'ind')"></div>
+        </div>
+        <div class="field"><label>Geographie</label>
+          <div class="tags-wrap" id="geo_w" onclick="document.getElementById('geo_i').focus()"><input class="tag-input" id="geo_i" placeholder="Land..." onkeydown="addTag(event,'geo')"></div>
+        </div>
+        <div class="field"><label>Zielfunktionen</label>
+          <div class="tags-wrap" id="func_w" onclick="document.getElementById('func_i').focus()"><input class="tag-input" id="func_i" placeholder="Funktion..." onkeydown="addTag(event,'func')"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startResearch()">Research starten →</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="phases">
+      <div class="phase" id="ph1">01 — Markt</div>
+      <div class="phase" id="ph2">02 — Org-Mapping</div>
+      <div class="phase" id="ph3">03 — Kandidaten</div>
+      <div class="phase" id="ph4">04 — Tiefenrecherche</div>
+      <div class="phase" id="ph5">05 — Shortlist</div>
+    </div>
+    <div class="log-terminal" id="logBox"></div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-n" id="sC">—</div><div class="stat-l">Zielunternehmen</div></div>
+      <div class="stat"><div class="stat-n" id="sK">—</div><div class="stat-l">Kandidaten</div></div>
+      <div class="stat"><div class="stat-n" id="sS">—</div><div class="stat-l">Shortlist</div></div>
+    </div>
+  </div>
+
+  <div class="results-wrap" id="resultsWrap">
+    <div class="results-bar">
+      <h2 id="resTitle">Ergebnisse</h2>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterC('all',this)">Alle</button>
+        <button class="filter-btn" onclick="filterC('shortlist',this)">Shortlist</button>
+        <button class="filter-btn" onclick="filterC('longlist',this)">Longlist</button>
+      </div>
+    </div>
+    <div class="cand-list" id="candList"></div>
+  </div>
+</div>
+
+<script>
+const API=window.location.origin+'/api/research';
+const SB='https://hwoyepbdxbkidbdccldv.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3b3llcGJkeGJraWRiZGNjbGR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NjM3MTcsImV4cCI6MjA5NDMzOTcxN30.MkoCBfVKc8xgP2B_iQqrra55BjJ3-vaBcUDllku0FLg';
+const tags={req:[],ind:[],geo:[],func:[]};
+let timer=null,mid=null,allC=[];
+window.onload=()=>{
+  const d={req:['Internationale Vertriebsführung','Multi-Channel Vertrieb','Medizintechnik oder verwandte Branche','Multi-Brand Erfahrung','Deutsch + Englisch verhandlungssicher'],ind:['Medizintechnik','Dental','Elektronik','Consumer Durables'],geo:['Deutschland','Österreich','Schweiz'],func:['VP Sales','Director Sales','Head of Sales','CSO','CCO']};
+  for(const[k,v]of Object.entries(d)){tags[k]=v;renderTags(k);}
+};
+function addTag(e,t){if(e.key!=='Enter')return;const v=e.target.value.trim();if(v&&!tags[t].includes(v)){tags[t].push(v);renderTags(t);}e.target.value='';e.preventDefault();}
+function removeTag(t,v){tags[t]=tags[t].filter(x=>x!==v);renderTags(t);}
+function renderTags(t){const w=document.getElementById(t+'_w'),i=document.getElementById(t+'_i');w.querySelectorAll('.tag').forEach(x=>x.remove());tags[t].forEach(v=>{const el=document.createElement('div');el.className='tag';el.innerHTML=`${v}<button onclick="removeTag('${t}','${v}')" type="button">×</button>`;w.insertBefore(el,i);});}
+async function startResearch(){
+  const title=document.getElementById('f_title').value.trim();
+  if(!title){alert('Bitte Position eingeben');return;}
+  document.querySelector('.btn-start').disabled=true;
+  const r=await fetch(`${SB}/rest/v1/mandates`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':`Bearer ${SK}`,'Prefer':'return=representation'},body:JSON.stringify({title,client_name:document.getElementById('f_client').value,client_industry:document.getElementById('f_industry').value,client_location:document.getElementById('f_location').value,position_description:document.getElementById('f_desc').value,requirements:tags.req,target_industries:tags.ind,search_geographies:tags.geo,target_functions:tags.func})});
+  const m=await r.json();mid=Array.isArray(m)?m[0].id:m.id;
+  await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mandate_id:mid,action:'run'})});
+  document.getElementById('formWrap').style.display='none';
+  document.getElementById('progressWrap').classList.add('active');
+  timer=setInterval(poll,3000);
+}
+const phMap={phase1_market_mapping:'ph1',phase2_org_mapping:'ph2',phase3_candidate_id:'ph3',phase4_deep_research:'ph4',phase5_shortlist:'ph5',completed:'ph5'};
+async function poll(){
+  const r=await fetch(`${API}?action=status&mandate_id=${mid}`);
+  const d=await r.json();
+  if(d.run)updateProg(d.run);
+  if(d.candidates?.length){allC=d.candidates;}
+  if(d.run?.status==='completed'||d.run?.status==='error'){clearInterval(timer);showRes(d.candidates||[]);}
+}
+function updateProg(run){
+  const ps=['ph1','ph2','ph3','ph4','ph5'],idx=ps.indexOf(phMap[run.phase]||'ph1');
+  ps.forEach((p,i)=>{document.getElementById(p).className='phase'+(i<idx?' done':i===idx?' active':'');});
+  const log=(run.log||[]).slice(-6);
+  document.getElementById('logBox').innerHTML=log.map(l=>`<div class="log-line"><span class="log-ts">[${new Date(l.ts).toLocaleTimeString('de-AT')}]</span><span>${l.msg}</span></div>`).join('');
+  document.getElementById('logBox').scrollTop=9999;
+  document.getElementById('sC').textContent=run.companies_found||'—';
+  document.getElementById('sK').textContent=run.candidates_found||'—';
+  document.getElementById('sS').textContent=run.shortlist_count||'—';
+}
+function showRes(cands){document.getElementById('progressWrap').style.display='none';document.getElementById('resultsWrap').classList.add('active');allC=cands;renderC(cands);}
+function filterC(f,el){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderC(f==='all'?allC:allC.filter(c=>c.status===f));}
+function renderC(cands){
+  const list=document.getElementById('candList');
+  if(!cands.length){list.innerHTML='<div class="empty">Keine Kandidaten gefunden</div>';return;}
+  const s=[...cands].sort((a,b)=>b.fit_score-a.fit_score);
+  document.getElementById('resTitle').textContent=`${s.length} Kandidaten — ${s.filter(c=>c.status==='shortlist').length} Shortlist`;
+  list.innerHTML=s.map(c=>{const sc=c.fit_score>=80?'sh':c.fit_score>=65?'sm':'sl';const inds=(c.change_indicators||[]).slice(0,3);
+  return`<div class="cand-item ${c.status}"><div><div class="cand-name">${c.first_name||''} ${c.last_name||''}</div><div class="cand-role">${c.current_title||''}</div><div class="cand-company">${c.current_company||''} ${c.current_country?'· '+c.current_country:''}</div><div class="cand-reasoning">${c.fit_reasoning||c.career_summary||''}</div><div class="cand-tags">${c.status==='shortlist'?'<span class="cand-tag sl">Shortlist</span>':''}${inds.map(i=>`<span class="cand-tag">${i}</span>`).join('')}</div></div><div class="score-col"><div class="score-circle ${sc}">${c.fit_score}</div><div class="score-lbl">Fit</div></div></div>`;}).join('');
+}
+</script>
+</body>
+</html>
